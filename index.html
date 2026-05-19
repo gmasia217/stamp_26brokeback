@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>브로크백 마운틴 관극 기록</title>
+
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" href="brokeback_icon.jpg">
+<link rel="apple-touch-icon" href="brokeback_icon.jpg">
+<meta name="theme-color" content="#151311">
+
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap');
+
+:root {
+  /* 브로크백 마운틴 테마 컬러 (딥브라운 & 숲속 빈티지 무드) */
+  --bg:#151311; --bg2:#24201c; --bg3:#36302a; --bg4:#474038;
+  --brd:#302b26; --brd2:#4d453d;
+  --txt:#f5f2eb; --txt2:#d9d5cd; --txt3:#aba69d; --txt4:#7d7a73; --dim:#5c5953;
+  --red:#ba613d; --red2:#9c4c2d; --red3:#ebd4c8; --red4:#f7ede8; /* 포스터 타이틀 색상 계열 */
+  --grn:#4f6354; --grn2:#d9e6dd;
+  --blu:#658296; --blu2:#d2e0eb;
+  
+  /* 좌석 히트맵 컬러 (브라운/골드 계열) */
+  --seat1:#66615b; 
+  --seat2:#948e86; 
+  --seat3:#d19e58; 
+  --seat4:#b57e33; 
+  --seat5:#8f5e1c;
+  
+  --tab-h: 60px;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+body { background:var(--bg); color:var(--txt); font-family:'Pretendard', sans-serif; font-size:14px; overflow-x:hidden; }
+#app { padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px)); }
+
+/* TAB BAR */
+.tab-bar { position:fixed; bottom:0; left:0; width:100%; height:calc(var(--tab-h) + env(safe-area-inset-bottom, 0px)); padding-bottom:env(safe-area-inset-bottom, 0px); background:var(--bg2); border-top:1px solid var(--brd); display:flex; z-index:100; }
+.tab-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:none; border:none; cursor:pointer; color:var(--txt4); font-size:10px; transition:color 0.2s; }
+.tab-btn.active { color:var(--red); }
+.tab-btn .icon { font-size:20px; filter: grayscale(100%) brightness(150%); }
+.tab-btn.active .icon { filter: none; }
+
+/* PAGES & COMMON */
+.page { display:none; padding:16px; animation: fadeIn 0.2s ease; }
+.page.active { display:block; }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+.page-title { font-family:'IBM Plex Sans KR', sans-serif; font-size:22px; font-weight:700; color:var(--txt); margin-bottom:16px; text-shadow:0 0 12px rgba(186,97,61,.4); }
+.card { background:var(--bg2); border:1px solid var(--brd); border-radius:12px; padding:16px; margin-bottom:16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+.card-title { font-size:13px; color:var(--txt); margin-bottom:12px; font-weight:700; letter-spacing:0.05em; }
+
+/* BUTTONS */
+.btn { background:transparent; border:1px solid var(--brd2); color:var(--txt2); padding:8px 14px; cursor:pointer; font-family:inherit; font-size:13px; border-radius:6px; transition:all 0.2s; }
+.btn:active { border-color:var(--red3); color:var(--red3); }
+.btn.prim { background:var(--red); border-color:var(--red); color:#fff; font-weight:700; box-shadow: 0 0 10px rgba(186,97,61,0.2); }
+.btn.prim:active { background:var(--red2); border-color:var(--red2); }
+.btn.sm { padding:4px 10px; font-size:11px; }
+.btn.ghost { background:transparent; border-color:transparent; color:var(--txt4); }
+.btn.grn { background:var(--grn); border-color:var(--grn); color:#fff; font-weight:700; }
+.flex-between { display:flex; justify-content:space-between; align-items:center; }
+
+/* BOX SELECTORS */
+.seg-group { display:flex; gap:8px; }
+.seg-item { flex:1; text-align:center; background:var(--bg3); border:1px solid var(--brd2); border-radius:6px; cursor:pointer; color:var(--txt3); padding:10px 0; transition:0.2s; font-size:13px; font-weight:600; }
+.seg-item input { display:none; }
+.seg-item.active.red { background:rgba(186,97,61,0.15); border-color:var(--red); color:var(--red); text-shadow: 0 0 5px rgba(186,97,61,0.5); }
+.seg-item.active.grn { background:rgba(79,99,84,0.15); border-color:var(--grn); color:var(--txt); }
+
+/* TABLE */
+.twrap { overflow-x:auto; margin:0 -16px; padding:0 16px; -webkit-overflow-scrolling: touch; }
+table.record-tb { width:max-content; min-width:100%; border-collapse:separate; border-spacing:0; border:1px solid var(--brd); border-left:0; border-top:0; }
+.record-tb th, .record-tb td { padding:8px 6px; border-bottom:1px solid var(--brd); border-right:1px solid var(--brd); text-align:center; white-space:nowrap; font-size:12px; vertical-align:middle; transition: opacity 0.2s; }
+.record-tb thead th { border-top:1px solid var(--brd); background:var(--bg4); position:sticky; top:0; z-index:21; font-size:10px; color:var(--txt); font-weight:600; letter-spacing:0.02em; }
+.hover-row:hover { background-color: var(--bg3); }
+
+/* NEXT D-DAY HIGHLIGHT */
+.closest-row td { background-color: rgba(186,97,61,0.12) !important; }
+.closest-row .st-date { border-left: 3px solid var(--red) !important; }
+.next-badge { display: inline-block; font-size: 8px; background: var(--red); color: #fff; padding: 1px 4px; border-radius: 4px; margin-bottom: 2px; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 0 4px rgba(186,97,61,0.5); }
+
+.st-date { position:sticky; left:0; z-index:20; background:var(--bg2); border-left:1px solid var(--brd); min-width:55px; max-width:55px; }
+.st-time { position:sticky; left:55px; z-index:20; background:var(--bg2); min-width:45px; max-width:45px; }
+.st-cast { position:sticky; left:100px; z-index:20; background:var(--bg2); min-width:100px; max-width:130px; border-right:2px solid var(--red) !important; overflow:hidden; text-overflow:ellipsis; }
+.record-tb thead .st-date, .record-tb thead .st-time, .record-tb thead .st-cast { background:var(--bg4); z-index:22; }
+
+/* FORMS & MODALS */
+.finput, .fselect { width:100%; background:var(--bg3); border:1px solid var(--brd2); color:var(--txt); padding:10px 12px; font-family:inherit; font-size:13px; border-radius:6px; outline:none; color-scheme:dark; text-transform: uppercase; }
+.finput:focus, .fselect:focus { border-color:var(--red); box-shadow: 0 0 5px rgba(186,97,61,0.3); }
+.fg { margin-bottom:12px; }
+.flbl { display:block; font-size:11px; color:var(--txt3); margin-bottom:5px; font-weight:600; }
+
+/* OVERLAY & MODAL ANIMATION */
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:200; justify-content:center; align-items:flex-end; backdrop-filter: blur(2px); }
+.overlay.show { display:flex; }
+.modal { background:var(--bg2); border-top:2px solid var(--red); width:100%; max-width:520px; max-height:90vh; overflow-y:auto; padding:20px; border-radius:16px 16px 0 0; animation:slideUp 0.3s ease; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
+@keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+
+.overlay.center { align-items:center; padding:20px; z-index:250; }
+.modal.center { border-radius:16px; border:1px solid var(--brd2); animation:popIn 0.2s ease; margin:auto; width:100%; max-width:400px; }
+@keyframes popIn { from { transform:scale(0.95); opacity:0; } to { transform:scale(1); opacity:1; } }
+
+.detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.detail-date-title { font-size: 18px; font-weight: 700; color: var(--txt); font-family: 'IBM Plex Sans KR', sans-serif; text-shadow: 0 0 8px rgba(255,255,255,0.3); }
+.detail-info-row { font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; }
+.dt-label { color: var(--red); font-weight: 600; margin-right: 12px; width: 60px; text-shadow: 0 0 5px rgba(186,97,61,0.3); }
+.dt-value { color: var(--txt); font-weight: 600; flex:1; }
+
+/* TICKET BUTTON */
+.btn-ticket { width:32px; height:32px; border-radius:50%; background:var(--bg4); border:1px solid var(--red2); display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 0 8px rgba(186,97,61,0.2); transition:all 0.2s; }
+.btn-ticket:hover { background:var(--bg3); transform:scale(1.05); }
+
+/* CALENDAR & EVENTS */
+.cal-filter-group { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.cal-filter-label { font-size:12px; color:var(--txt2); width:65px; font-weight:700; }
+.cal-filter-btn { background:var(--bg3); border:1px solid var(--brd2); color:var(--txt3); padding:4px 10px; border-radius:4px; font-size:12px; cursor:pointer; transition:all 0.2s; }
+.cal-filter-btn.active { background:var(--txt); border-color:var(--txt); color:#000; font-weight:700; box-shadow: 0 0 8px rgba(255,255,255,0.4); }
+
+.cal-nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.cal-grid { display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:1px; position:relative; background:var(--brd); border:1px solid var(--brd); border-radius:4px; overflow:hidden;}
+.cal-dow { text-align:center; font-size:11px; font-weight:700; color:var(--txt2); padding:8px 0; background:var(--bg2); }
+.cal-day { min-height:100px; min-width:0; background:var(--bg); padding:6px 4px; cursor:pointer; position:relative; display:flex; flex-direction:column; align-items:flex-start; transition:background 0.15s; }
+.cal-day.today { background:rgba(186,97,61,.08); border:1px solid var(--red); }
+.cal-day.empty { background:var(--bg2); cursor:default; }
+.cal-day-num { font-size:12px; font-weight:700; color:var(--txt); margin-bottom:4px; padding-left:2px; }
+.cal-day.sun .cal-day-num { color:#ff8787; }
+.cal-day.sat .cal-day-num { color:var(--blu); }
+
+.cs-chip { width:100%; text-align:left; padding:4px; border-radius:4px; margin-top:4px; background:transparent; border:1px solid transparent; }
+.cs-time { font-size:11px; font-weight:700; color:var(--txt); text-shadow: 0 0 2px rgba(255,255,255,0.2); }
+.cs-time::before { content: '• '; }
+.cs-cast { font-size:10px; color:var(--txt2); margin-top:2px; padding-left:0; word-break:break-all; white-space:normal; line-height:1.2; }
+.cs-chip.booked { background:rgba(186,97,61,0.15); border-color:var(--red); }
+.cs-chip.booked .cs-time, .cs-chip.booked .cs-cast { color:var(--red); text-shadow: 0 0 3px rgba(186,97,61,0.3); }
+.cs-chip.unseated { background:rgba(92, 89, 83, 0.25); border-color:var(--txt3); }
+.cs-chip.unseated .cs-time, .cs-chip.unseated .cs-cast { color:var(--txt2); }
+
+/* WALLET & STAMPS */
+.wallet-grid { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+.wcard { width:calc(50% - 4px); flex-grow:1; background:var(--bg3); border:1px solid var(--brd2); border-radius:6px; text-align:center; display:flex; flex-direction:column; overflow:hidden; }
+.wcard-header { background:var(--bg4); padding:8px 4px; font-size:11px; color:var(--txt); font-weight:700; border-bottom:1px solid var(--brd2); }
+.wcard-body { display:flex; }
+.wcard-half { flex:1; padding:12px 0; }
+.wcard-half:first-child { border-right:1px solid var(--brd2); }
+.wcard-label-curr { font-size:10px; color:var(--red); font-weight:700; margin-bottom:6px; }
+.wcard-label-final { font-size:10px; color:var(--txt2); font-weight:600; margin-bottom:6px; }
+.wcard-sub { font-size:10px; color:var(--txt4); margin-top:6px; transform:scale(0.85); transform-origin:center; white-space:nowrap; }
+.wcard-val { font-size:22px; font-weight:700; font-family:'IBM Plex Sans KR'; color:var(--txt); }
+
+.collapsible-content { display:none; margin-top:12px; border-top:1px dashed var(--brd2); padding-top:12px; }
+.collapsible-content.open { display:block; }
+
+/* HEATMAP & MINIMAP (일단 기본 템플릿 유지) */
+.heatmap-wrap { display:flex; flex-direction:column; gap:30px; align-items:center; overflow-x:auto; padding-bottom:15px; }
+.mini-hm-container { display:flex; flex-direction:column; gap:20px; align-items:center; margin:16px 0; border:1px solid var(--brd2); padding:20px; border-radius:8px; background:var(--bg); overflow-x:auto;}
+
+.zone-col { display:flex; flex-direction:column; gap:3px; align-items:center; }
+.seat-row { display:flex; gap:3px; align-items:center; }
+.row-label { font-size:9px; width:12px; text-align:center; color:var(--txt3); margin-right:4px; font-weight:700; }
+.seat-cell { width:12px; height:12px; background:var(--bg4); border-radius:2px; border:1px solid transparent; flex-shrink:0; }
+.seat-aisle { width:8px; flex-shrink:0; }
+
+.mini-seat-row { display:flex; gap:2px; justify-content:center; align-items:center; }
+.mini-seat-cell { width:10px; height:10px; background:var(--bg4); border-radius:2px; flex-shrink:0; border:1px solid transparent; }
+.mini-seat-aisle { width:6px; flex-shrink:0; }
+.mini-row-label { font-size:8px; width:12px; text-align:center; color:var(--txt4); margin-right:4px; line-height:10px; font-weight:600;}
+
+.seat-cell.v1 { background:var(--seat1); border-color:var(--seat1); } 
+.seat-cell.v2 { background:var(--seat2); border-color:var(--seat2); }
+.seat-cell.v3 { background:var(--seat3); border-color:var(--seat3); } 
+.seat-cell.v4 { background:var(--seat4); border-color:var(--seat4); box-shadow:0 0 3px var(--seat4); }
+.seat-cell.v5 { background:var(--seat5); border-color:var(--seat5); box-shadow:0 0 5px var(--seat5); }
+.seat-cell.hidden, .mini-seat-cell.hidden { background:transparent; border-color:transparent; pointer-events:none; box-shadow:none; }
+.mini-seat-cell.highlight { background: var(--seat4); box-shadow: 0 0 6px var(--seat4); border-color: var(--seat4); }
+
+.heatmap-legend { display:flex; gap:10px; justify-content:center; margin-top:10px; flex-wrap:wrap; }
+.legend-item { display:flex; align-items:center; gap:4px; font-size:11px; color:var(--txt); font-weight:600; }
+.legend-dot { width:12px; height:12px; border-radius:2px; }
+
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="page active" id="page-record">
+    <div style="text-align:center; margin-bottom:16px; position:relative;">
+      <img src="brokeback_logo.png" alt="브로크백 마운틴" style="height:55px; object-fit:contain; filter: drop-shadow(0 0 8px rgba(186,97,61,0.4));">
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <button class="btn sm ghost" id="btn-filter-exchange" onclick="toggleExchangeFilter()" style="padding:4px 8px; font-size:12px; color:var(--txt3);">👁️ 실관람만</button>
+      <button class="btn prim sm" onclick="openRecordModal()" style="padding:6px 12px; font-size:13px;">+ 회차 추가</button>
+    </div>
+    
+    <div class="twrap">
+      <table class="record-tb">
+        <thead id="record-thead"></thead>
+        <tbody id="record-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="page" id="page-calendar">
+    <div class="page-title">스케줄</div>
+    
+    <div class="card" style="padding:16px 12px;">
+      <div id="cal-filter-wrap"></div>
+      <div style="margin-top:12px;">
+        <button class="btn sm" style="margin-right:4px; color:var(--txt); border-color:var(--txt3);" onclick="applyCalFilter()">조회하기</button>
+        <button class="btn sm ghost" onclick="resetCalFilter()">초기화</button>
+      </div>
+    </div>
+
+    <div class="card" style="padding:12px;">
+      <div class="cal-nav">
+        <button class="btn sm" onclick="changeMonth(-1)">‹ 이전달</button>
+        <div id="cal-month-title" style="font-weight:700; font-size:18px; color:var(--txt); text-shadow:0 0 5px rgba(255,255,255,0.3);"></div>
+        <button class="btn sm" onclick="changeMonth(1)">다음달 ›</button>
+      </div>
+      <div id="cal-grid-container"></div>
+    </div>
+  </div>
+
+  <div class="page" id="page-coupon">
+    <div class="page-title">할인권 및 도장판</div>
+    
+    <div class="card" style="padding:16px;">
+      <div style="font-weight:700; color:var(--red); margin-bottom:8px; font-size:13px; text-shadow:0 0 5px rgba(186,97,61,0.3);">🎁 재관람 혜택</div>
+      <div style="font-size:12px; color:var(--txt); line-height:1.6;">
+        • 5회 관람 시 : 40% 할인권 2매, 현장예매 50% 할인권 1매 (임시)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between" style="margin-bottom:12px;">
+        <div class="card-title" style="margin:0;">지갑 현황</div>
+        <button class="btn sm" style="background:var(--txt); color:#000; border:none; font-weight:700;" onclick="openWalletModal()">+ 추가/차감</button>
+      </div>
+      <div class="wallet-grid" id="wallet-cards"></div>
+      
+      <div class="card-title" style="cursor:pointer; color:var(--txt3);" onclick="toggleCollapsible('wallet-history')">
+        ▶ 할인권 상세 기록 (접기/펴기)
+      </div>
+      <div id="wallet-history" class="collapsible-content">
+        <div class="twrap" style="margin:0; padding:0;">
+          <table class="record-tb" style="width:100%; font-size:11px;">
+            <thead><tr><th>날짜</th><th style="min-width:30px;">유형</th><th>재관</th><th>40%</th><th>현장50%</th><th style="min-width:100px;">메모</th><th>순서 및 관리</th></tr></thead>
+            <tbody id="wallet-history-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex-between" style="margin-bottom:12px;">
+        <div class="card-title" style="margin:0;">도장판 현황</div>
+        <button class="btn sm" onclick="addBoard()" style="color:var(--txt); border-color:var(--txt3);">+ 도장판 추가</button>
+      </div>
+      <div id="board-status-container" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;"></div>
+    </div>
+    
+  </div>
+
+  <div class="page" id="page-stats">
+    <div class="page-title">정산 통계</div>
+    <div class="card">
+      <div class="card-title">배우별 관람 횟수</div>
+      <div style="font-size:10px; color:var(--txt4); margin-bottom:8px;">* 교환, 나눔 표 및 좌석이 없는 회차는 통계 제외</div>
+      <table class="record-tb" style="width:100%; border-left:1px solid var(--brd); border-top:1px solid var(--brd);" id="stats-actors"></table>
+    </div>
+    
+    <div class="card">
+      <div class="card-title">좌석 히트맵</div>
+      <div style="font-size:11px; color:var(--txt3); font-weight:400; margin-top:-8px; margin-bottom:16px;">📍 예스24아트원 1관</div>
+      <div class="heatmap-wrap" id="heatmap-container" style="margin-top:10px;"></div>
+      <div class="heatmap-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--bg4);"></div>0회</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--seat1);"></div>1회</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--seat2);"></div>2회</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--seat3);"></div>3회</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--seat4);"></div>4회</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--seat5);"></div>5회+</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-title">관극 회차</div>
+      <div style="font-size:10px; color:var(--txt4); margin-bottom:8px;">* 실관람 기록 중 좌석 정보가 있는 표만 표시</div>
+      <div class="twrap" style="margin:0; padding:0;">
+        <table class="record-tb" style="width:100%; border-left:1px solid var(--brd); border-top:1px solid var(--brd);">
+          <thead>
+            <tr>
+              <th style="color:var(--txt);">날짜</th>
+              <th style="color:var(--txt);">시간</th>
+              <th style="color:var(--txt);">캐스트</th>
+              <th style="color:var(--txt);">좌석</th>
+              <th style="color:var(--txt);">이벤트</th>
+            </tr>
+          </thead>
+          <tbody id="stats-sessions-body"></tbody>
+        </table>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="page" id="page-settings">
+    <div class="page-title">설정</div>
+    <div class="card">
+      <div class="card-title">데이터 동기화</div>
+      <div class="flex-between" style="margin-bottom:12px; border-bottom:1px solid var(--brd2); padding-bottom:16px;">
+        <div>
+          <div style="font-size:13px; margin-bottom:8px; font-weight:600;">스케줄 업데이트</div>
+          <div id="set-sch-time" style="font-size:10px; color:var(--txt4);">확인 중...</div>
+        </div>
+        <button class="btn sm" onclick="fetchSchedule(true)" style="color:var(--txt);">새로고침</button>
+      </div>
+      <div class="flex-between" style="padding-top:8px;">
+        <div>
+          <div style="font-size:13px; margin-bottom:8px; font-weight:600;">이벤트 업데이트</div>
+          <div id="set-evt-time" style="font-size:10px; color:var(--txt4);">확인 중...</div>
+        </div>
+        <button class="btn sm" onclick="fetchEvents(true)" style="color:var(--txt);">새로고침</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">백업 및 복원</div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn" style="flex:1; color:var(--txt);" onclick="exportData()">JSON 백업</button>
+        <button class="btn" style="flex:1; color:var(--txt);" onclick="document.getElementById('import-file').click()">JSON 복원</button>
+        <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(event)">
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('record', this)"><span class="icon">📝</span>기록</button>
+  <button class="tab-btn" onclick="switchTab('calendar', this)"><span class="icon">📅</span>스케줄</button>
+  <button class="tab-btn" onclick="switchTab('coupon', this)"><span class="icon">🎫</span>도장·할인권</button>
+  <button class="tab-btn" onclick="switchTab('stats', this)"><span class="icon">📊</span>정산</button>
+  <button class="tab-btn" onclick="switchTab('settings', this)"><span class="icon">⚙️</span>설정</button>
+</nav>
+
+<div class="overlay" id="modal-record" onclick="if(event.target===this) closeModal('modal-record')">
+  <div class="modal">
+    <div class="page-title" id="rm-title" style="font-size:18px;">회차 기록</div>
+    <input type="hidden" id="rm-id">
+    <input type="hidden" id="rm-create-time">
+    
+    <div style="display:flex; gap:10px;">
+      <div class="fg" style="flex:1;">
+        <label class="flbl">날짜</label>
+        <input type="date" id="rm-date" class="finput" onchange="autoFillCasting()">
+      </div>
+      <div class="fg" style="width:80px;">
+        <label class="flbl">시간</label>
+        <select id="rm-time" class="fselect" onchange="onTimeChange()">
+          <option value="낮">낮</option><option value="밤">밤</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;" id="rm-cast-container"></div>
+    <div class="fg">
+      <label class="flbl">할인 권종</label>
+      <select id="rm-disc" class="fselect"></select>
+    </div>
+    
+    <div class="fg">
+      <label class="flbl">좌석 정보 (층 / 열 / 번호)</label>
+      <div style="display:flex; gap:10px;">
+        <select id="rm-zone" class="fselect" style="flex:1;"><option value="">층 선택</option><option value="1층">1층</option><option value="2층">2층</option></select>
+        <input type="text" id="rm-row" class="finput" style="flex:1; text-transform:uppercase;" placeholder="열 (A~T, V, W)">
+        <input type="number" id="rm-num" class="finput" style="flex:1;" placeholder="번호" min="1">
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="flbl">예매 내역/티켓 첨부 (선택)</label>
+      <div style="font-size:10px; color:var(--txt4); margin-top:-3px; margin-bottom:5px;">* 첨부된 이미지는 저장소 보호를 위해 자동 압축됩니다.</div>
+      <input type="file" id="rm-receipt" accept="image/*" class="finput" style="padding:6px; font-size:12px; text-transform:none;" onchange="handleImageUpload(event)">
+      <div id="rm-receipt-preview" style="margin-top:8px; display:none; position:relative; width:max-content;">
+         <img id="rm-receipt-img" src="" style="max-height:120px; border-radius:6px; border:1px solid var(--brd2);">
+         <button type="button" onclick="clearReceipt()" style="position:absolute; top:-8px; right:-8px; background:#ef4444; color:#fff; border:none; border-radius:50%; width:22px; height:22px; font-size:11px; font-weight:bold; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.3);">X</button>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="flbl">도장판 선택</label>
+      <div id="rm-boards" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+      <div style="display:flex; gap:6px; margin-top:8px; align-items:center;">
+        <input type="text" id="rm-new-board-name" class="finput" style="flex:1; padding:6px 10px; min-height:34px; font-size:12px; text-transform:none;" placeholder="새 도장판 이름 (비우면 자동)">
+        <button type="button" class="btn prim sm" style="white-space:nowrap; min-height:34px;" onclick="addBoardFromModal()">+ 추가</button>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="flbl">도장 적립 배율</label>
+      <div class="seg-group" id="rm-mult-group">
+        <label class="seg-item active red" id="mult-label-1" onclick="selectMult(1)">x1<input type="radio" name="rm-mult" value="1" checked></label>
+        <label class="seg-item" id="mult-label-2" onclick="selectMult(2)">x2<input type="radio" name="rm-mult" value="2"></label>
+        <label class="seg-item" id="mult-label-3" onclick="selectMult(3)">x3<input type="radio" name="rm-mult" value="3"></label>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="flbl">메모</label>
+      <input type="text" id="rm-memo" class="finput" placeholder="메모를 입력하세요" style="text-transform:none;">
+    </div>
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button class="btn" style="flex:1;" onclick="closeModal('modal-record')">취소</button>
+      <button class="btn prim" style="flex:1;" onclick="saveRecord()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay center" id="modal-detail" onclick="if(event.target===this) closeModal('modal-detail')">
+  <div class="modal center" style="background:var(--bg2); padding:20px; border-radius:16px; border:1px solid var(--brd2);">
+    <div class="detail-header">
+      <div class="detail-date-title" id="dt-title"></div>
+      <button class="btn sm ghost" onclick="closeModal('modal-detail')" style="font-size:16px; padding:0 6px; color:var(--txt);">✕</button>
+    </div>
+    <div class="detail-info-row">
+      <span class="dt-label">CAST</span>
+      <span id="dt-cast" class="dt-value"></span>
+    </div>
+    <div class="detail-info-row">
+      <span class="dt-label">SEAT</span>
+      <span id="dt-seat" class="dt-value"></span>
+    </div>
+    
+    <div class="detail-info-row" id="dt-details-row" style="display:none; margin-bottom:16px;">
+      <span class="dt-label">DETAILS</span>
+      <div class="dt-value">
+        <button type="button" class="btn-ticket" onclick="openReceiptViewer()" title="티켓/내역서 보기">
+           <span style="font-size:16px; margin-top:-1px;">🎫</span>
+        </button>
+      </div>
+    </div>
+    
+    <div id="dt-minimap"></div>
+    
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <button class="btn" style="flex:1; color:var(--txt);" id="dt-btn-edit">수정</button>
+      <button class="btn" style="flex:1; background:#ef4444; color:#fff; font-weight:700; border:none;" id="dt-btn-delete">삭제</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay center" id="modal-image-viewer" onclick="if(event.target===this) closeModal('modal-image-viewer')" style="z-index:300;">
+  <div style="position:relative; max-width:90vw; max-height:90vh; display:flex; justify-content:center; align-items:center;">
+     <button onclick="closeModal('modal-image-viewer')" style="position:absolute; top:-15px; right:-15px; background:var(--bg2); border:1px solid var(--brd2); color:var(--txt); width:32px; height:32px; border-radius:50%; cursor:pointer; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.5);">✕</button>
+     <img id="viewer-img" src="" style="max-width:100%; max-height:85vh; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,0.8); object-fit:contain;">
+  </div>
+</div>
+
+<div class="overlay" id="modal-wallet" onclick="if(event.target===this) closeModal('modal-wallet')">
+  <div class="modal">
+    <div class="page-title" id="wm-title" style="font-size:18px;">할인권 내역</div>
+    <input type="hidden" id="wm-id">
+    <input type="hidden" id="wm-create-time">
+    <div class="fg"><label class="flbl">날짜</label><input type="date" id="wm-date" class="finput" style="text-transform:none;"></div>
+    
+    <div class="fg">
+      <label class="flbl">유형</label>
+      <div class="seg-group" id="wm-type-group">
+        <label class="seg-item active grn" id="wm-type-label-add" onclick="selectWmType('add')">획득 (+)<input type="radio" name="wm-type" value="add" checked></label>
+        <label class="seg-item" id="wm-type-label-sub" onclick="selectWmType('sub')">사용/차감 (-)<input type="radio" name="wm-type" value="sub"></label>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="flbl">수량</label>
+      <div id="wm-coupon-inputs" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:12px;"></div>
+    </div>
+    
+    <div class="fg"><label class="flbl">메모</label><input type="text" id="wm-memo" class="finput" style="text-transform:none;"></div>
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button class="btn" style="flex:1;" onclick="closeModal('modal-wallet')">취소</button>
+      <button class="btn" style="flex:1; background:var(--txt); color:#000; font-weight:700;" onclick="saveWallet()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 1. EXTENSIBILITY CONFIGURATION 
+// ============================================================
+const CONFIG = {
+  SHOW_NAME: "브로크백 마운틴",
+  STORAGE_KEY: "brokeback_tracker_v1",
+  
+  ROLES: [
+    { id: "cast1", label: "중년 에니스", actors: ["정상훈", "이상홍"] },
+    { id: "cast2", label: "에니스 델마", actors: ["주민진", "홍승안"] },
+    { id: "cast3", label: "잭 트위스트", actors: ["정휘", "윤소호"] },
+    { id: "cast4", label: "알마", actors: ["전재희", "최하윤"] },
+    { id: "cast5", label: "조 아구이레", actors: ["민성욱", "정명군"] },
+    { id: "cast6", label: "볼라디어", actors: ["이영미", "문혜원"] }
+  ],
+  
+  EVENTS: [],
+  
+  DISCOUNTS: [
+    { label: "없음", value: "" },
+    { label: "프리뷰", value: "프리뷰" },
+    { label: "조예할", value: "조예할" },
+    { label: "재관할", value: "재관할", useWallet: "re" },
+    { label: "뉴프로할", value: "뉴프로할" },
+    { label: "마티네할", value: "마티네할" },
+    { label: "40% 할인권", value: "40%", useWallet: "d40" },
+    { label: "타임세일", value: "타임세일" },
+    { label: "교환", value: "교환" },
+    { label: "나눔", value: "나눔" }
+  ],
+  
+  WALLET_FIELDS: [
+    { id: "re", label: "재관람 할인표" },
+    { id: "d40", label: "40% 할인권" },
+    { id: "d50_onsite", label: "현장 50% 할인권" }
+  ],
+
+  STAMP_MILESTONES: [5]
+};
+
+// ============================================================
+// 예스24아트원 1관 좌석 데이터 (임시 유지, 추후 업데이트 가능)
+// ============================================================
+const THEATER_ZONES = [
+  {
+    name: '1층',
+    left: { id: 'V', map: [1,2,3,4, null, 5,6,7,8, null, 9,10,11,12, null, 13,14,15,16] },
+    right: { id: 'W', map: [1,2,3,4, null, 5,6, null, 7,8,9,10, null, 11,12,13,14] },
+    rows: [
+      { id: 'A', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14,15, 'a', 16,17,18,19] },
+      { id: 'B', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14,15, 'a', 16,17,18,19] },
+      { id: 'C', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14,15, 'a', 16,17,18,19] },
+      { id: 'D', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14,15, 'a', 16,17,18,19] },
+      { id: 'E', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14,15, 'a', 16,17,18,19] },
+      { id: 'F', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14,15, 'a', 16,17,18,19] },
+      { id: 'G', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14,15, 'a', 16,17,18,19] },
+      { id: 'H', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14,15, 'a', 16,17,18,19] },
+      { id: 'I', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14,15, 'a', 16,17,18,19] },
+      { id: 'J', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14,15, 'a', 16,17,18,19] },
+      { id: 'K', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14,null, 'a', 15,16,17,18] },
+      { id: 'L', map: [null,null,1,2, 'a', 3,4,5,6,7,8,9,10,11,12,13, 'a', 14,15,16,17] },
+      { id: 'M', map: [null,null,1,2, 'a', 3,4,null,null,null,null,null,null,null,null,null, 'a', 5,6,7,8] },
+      { id: 'N', map: [null,null,1,2, 'a', 3,4,null,null,null,null,null,null,null,null,null, 'a', null,null,null,null] },
+      { id: 'O', map: [null,null,1,2, 'a', 3,4,5,null,null,null,null,null,null,null,null, 'a', null,null,null,null] }
+    ]
+  },
+  {
+    name: '2층',
+    rows: [
+      { id: 'P', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14, 'a', 15,16] },
+      { id: 'Q', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14, 'a', 15,16] },
+      { id: 'R', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14] },
+      { id: 'S', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14] },
+      { id: 'T', map: [1,2,3,4, 'a', 5,6,7,8,9,10,11,12,13,14] }
+    ]
+  }
+];
+
+// ============================================================
+// 2. STATE MANAGEMENT
+// ============================================================
+let state = {
+  records: [], 
+  boards: [{ id: "b1", name: "1", initial: 0, active: true }],
+  wallet: [], 
+  walletOrder: {}, 
+  schedule: [],
+  events: []
+};
+
+let calFilters = {};
+CONFIG.ROLES.forEach((r, idx) => { calFilters[`cast${idx+1}`] = []; });
+let hideExchange = false;
+
+// 이미지 처리 전역 변수
+let currentReceiptBase64 = "";
+let currentViewReceipt = "";
+
+function loadState() {
+  const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
+  if(saved) {
+    const parsed = JSON.parse(saved);
+    state.records = parsed.records || [];
+    state.boards = parsed.boards || [{ id: "b1", name: "1", initial: 0, active: true }];
+    state.wallet = parsed.wallet || [];
+    state.walletOrder = parsed.walletOrder || {}; 
+    
+    if (parsed.schedule && parsed.schedule.length > 0) {
+        state.schedule = parsed.schedule;
+    }
+  }
+}
+
+function saveState() { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state)); }
+function uuid() { return Math.random().toString(36).substr(2, 9); }
+function todayStr() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+// ============================================================
+// 3. UI NAVIGATION
+// ============================================================
+function switchTab(tabId, btnEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + tabId).classList.add('active');
+  btnEl.classList.add('active');
+  
+  if(tabId === 'record') renderRecords();
+  if(tabId === 'calendar') { renderCalFilters(); renderCalendar(); }
+  if(tabId === 'coupon') renderCoupons();
+  if(tabId === 'stats') renderStats();
+}
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function toggleCollapsible(id) { document.getElementById(id).classList.toggle('open'); }
+
+function toggleExchangeFilter() {
+  hideExchange = !hideExchange;
+  const btn = document.getElementById('btn-filter-exchange');
+  if (hideExchange) { btn.innerHTML = '👁️‍🗨️ 전체보기'; btn.style.color = 'var(--red)'; } 
+  else { btn.innerHTML = '👁️ 실관람만'; btn.style.color = 'var(--txt3)'; }
+  renderRecords();
+}
+
+function formatDiscount(val) {
+  if (val === '교환/나눔') return '교환'; 
+  return val || '-';
+}
+
+// ============================================================
+// IMAGE UPLOAD & COMPRESSION
+// ============================================================
+function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const MAX_WIDTH = 800; 
+      let width = img.width;
+      let height = img.height;
+
+      if (width > MAX_WIDTH) {
+        height *= MAX_WIDTH / width;
+        width = MAX_WIDTH;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      currentReceiptBase64 = canvas.toDataURL('image/jpeg', 0.7); 
+      document.getElementById('rm-receipt-img').src = currentReceiptBase64;
+      document.getElementById('rm-receipt-preview').style.display = 'block';
+    }
+    img.src = event.target.result;
+  }
+  reader.readAsDataURL(file);
+}
+
+function clearReceipt() {
+  currentReceiptBase64 = "";
+  document.getElementById('rm-receipt').value = "";
+  document.getElementById('rm-receipt-preview').style.display = 'none';
+}
+
+function openReceiptViewer() {
+  if(!currentViewReceipt) return;
+  document.getElementById('viewer-img').src = currentViewReceipt;
+  openModal('modal-image-viewer');
+}
+
+// ============================================================
+// 4. TAB 1: RECORD 
+// ============================================================
+function renderRecords() {
+  let thHtml = `<tr>
+    <th class="st-date">날짜</th>
+    <th class="st-time">시간</th>
+    <th class="st-cast">캐스트</th>
+    <th>할인</th>
+    <th>좌석</th>`;
+  state.boards.forEach(b => { thHtml += `<th style="color:var(--txt2); font-size:10px;">${b.name}</th>`; });
+  thHtml += `<th>관리</th></tr>`;
+  document.getElementById('record-thead').innerHTML = thHtml;
+
+  let sorted = [...state.records].sort((a,b) => {
+    return a.date.localeCompare(b.date) || a.time.localeCompare(b.time) || (a.createTime || 0) - (b.createTime || 0);
+  });
+  
+  if (hideExchange) {
+    sorted = sorted.filter(r => r.discount !== '교환' && r.discount !== '교환/나눔');
+  }
+
+  let boardCum = {};
+  state.boards.forEach(b => boardCum[b.id] = b.initial || 0);
+
+  const todayD = todayStr();
+  const closestRecord = sorted.find(r => r.date >= todayD && !['교환', '교환/나눔', '나눔'].includes(r.discount));
+  const closestId = closestRecord ? closestRecord.id : null;
+
+  sorted.forEach(r => {
+    r._cum = {};
+    r._isMilestone = {};
+    state.boards.forEach(b => {
+      if (r.boards && r.boards[b.id]) {
+        let before = boardCum[b.id];
+        boardCum[b.id] += r.boards[b.id]; 
+        r._cum[b.id] = boardCum[b.id];
+        CONFIG.STAMP_MILESTONES.forEach(m => {
+          if (before < m && boardCum[b.id] >= m) r._isMilestone[b.id] = true;
+        });
+      }
+    });
+  });
+
+  let tbHtml = sorted.map(r => {
+    let casts = [];
+    if(r.cast1) casts.push(r.cast1);
+    if(r.cast2) casts.push(r.cast2);
+    if(r.cast3) casts.push(r.cast3);
+    if(r.cast4) casts.push(r.cast4);
+    if(r.cast5) casts.push(r.cast5);
+    if(r.cast6) casts.push(r.cast6);
+    const castStr = casts.length > 0 ? casts.join('·') : '-';
+    
+    let seatStr = '-';
+    if (r.seatZone && r.seatRow !== "" && r.seatNum !== "") {
+      seatStr = `${r.seatZone} ${r.seatRow}-${r.seatNum}`;
+    } else if (r.seatZone && r.seatRow !== "") {
+      seatStr = `${r.seatZone} ${r.seatRow}`;
+    } else if (r.seatZone) {
+      seatStr = r.seatZone;
+    }
+
+    const dispDisc = formatDiscount(r.discount);
+    const isExchange = (r.discount === '교환' || r.discount === '교환/나눔');
+    const dimCls = isExchange ? 'opacity: 0.3;' : '';
+    
+    const isClosest = (r.id === closestId);
+    const rowClass = isClosest ? 'hover-row closest-row' : 'hover-row';
+    const badgeHtml = isClosest ? `<div class="next-badge">NEXT</div>` : '';
+
+    let rowHtml = `<tr class="${rowClass}">
+      <td class="st-date" onclick="openDetailModal('${r.id}')" style="cursor:pointer; text-decoration:underline; text-underline-offset:2px; color:var(--txt);">
+        <div style="display:flex; flex-direction:column; align-items:center; ${dimCls}">
+          ${badgeHtml}
+          <div>${r.date.substring(5).replace('-','.')}</div>
+        </div>
+      </td>
+      <td class="st-time"><div style="${dimCls}">${r.time}</div></td>
+      <td class="st-cast" style="font-weight:700; color:var(--red);" title="${castStr}"><div style="${dimCls}">${castStr}</div></td>
+      <td style="font-size:10px;"><div>${dispDisc}</div></td>
+      <td style="font-size:10px;"><div>${seatStr}</div></td>`;
+    
+    state.boards.forEach(b => {
+      const stamped = r.boards && r.boards[b.id] ? r.boards[b.id] : 0;
+      if (stamped > 0) {
+        const icon = r._isMilestone[b.id] ? '🎁' : '';
+        rowHtml += `<td style="color:var(--txt); line-height:1.4; font-weight:700;"><div>${stamped}<br><span style="font-size:10px; color:var(--txt3); font-weight:400;">(${r._cum[b.id]}${icon})</span></div></td>`;
+      } else {
+        rowHtml += `<td style="color:var(--txt4)"><div>-</div></td>`;
+      }
+    });
+
+    rowHtml += `
+      <td onclick="event.stopPropagation();">
+        <div style="display:flex; gap:4px; justify-content:center;">
+          <button class="btn sm" onclick="editRecord('${r.id}')" style="padding:2px 4px; color:var(--txt);">✎</button>
+          <button class="btn sm" onclick="deleteRecord('${r.id}')" style="padding:2px 4px; color:#ef4444; border-color:#ef4444;">✕</button>
+        </div>
+      </td></tr>`;
+    return rowHtml;
+  }).join('');
+  
+  if(!tbHtml) tbHtml = `<tr><td colspan="${6+state.boards.length}" style="padding:40px 0; color:var(--txt4); position:sticky; left:0;">기록이 없습니다</td></tr>`;
+  document.getElementById('record-tbody').innerHTML = tbHtml;
+}
+
+function initRecordForm() {
+  document.getElementById('rm-cast-container').innerHTML = CONFIG.ROLES.map((role, idx) => `
+    <div class="fg" style="min-width:30%; flex:1;">
+      <label class="flbl">${role.label}</label>
+      <select id="rm-cast${idx+1}" class="fselect">
+        <option value="">선택</option>
+        ${role.actors.map(a => `<option value="${a}">${a}</option>`).join('')}
+      </select>
+    </div>
+  `).join('');
+  document.getElementById('rm-disc').innerHTML = CONFIG.DISCOUNTS.map(d => `<option value="${d.value}">${d.label}</option>`).join('');
+}
+
+function selectMult(val) {
+  [1, 2, 3].forEach(n => document.getElementById(`mult-label-${n}`).classList.remove('active', 'red'));
+  document.getElementById(`mult-label-${val}`).classList.add('active', 'red');
+}
+
+function autoFillCasting() {
+  const date = document.getElementById('rm-date').value;
+  const timeSelect = document.getElementById('rm-time');
+  if (!date || !state.schedule) return;
+  
+  const matches = state.schedule.filter(s => s.date === date);
+  if (matches.length > 0) {
+    const cur = timeSelect.value;
+    timeSelect.innerHTML = '<option value="">선택</option>';
+    matches.sort((a,b)=>a.time.localeCompare(b.time)).forEach(s => {
+      const o = document.createElement('option');
+      o.value = s.time; o.textContent = s.time;
+      timeSelect.appendChild(o);
+    });
+    
+    const setCasts = (m) => {
+      for(let i=1; i<=6; i++) {
+        const el = document.getElementById(`rm-cast${i}`);
+        if(el) el.value = m[`cast${i}`] || '';
+      }
+    };
+
+    if (matches.length === 1) {
+      timeSelect.value = matches[0].time;
+      setCasts(matches[0]);
+    } else if (cur) {
+      timeSelect.value = cur;
+      const m = matches.find(s => s.time === cur);
+      if (m) setCasts(m);
+    }
+  } else {
+    timeSelect.innerHTML = `<option value="낮">낮</option><option value="밤">밤</option>`;
+  }
+}
+
+function onTimeChange() {
+  const date = document.getElementById('rm-date').value;
+  const time = document.getElementById('rm-time').value;
+  if (!date || !time || !state.schedule) return;
+  const m = state.schedule.find(s => s.date === date && s.time === time);
+  if (m) {
+    for(let i=1; i<=6; i++) {
+      const el = document.getElementById(`rm-cast${i}`);
+      if(el) el.value = m[`cast${i}`] || '';
+    }
+  }
+}
+
+function renderBoardCheckboxesInModal(selectedId = "") {
+  let html = `<label style="padding:4px 8px; border:1px solid var(--brd2); border-radius:4px; font-size:12px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+    <input type="radio" name="rm-board-radio" value="" ${selectedId === "" ? 'checked' : ''}> 선택 안 함
+  </label>`;
+  
+  html += state.boards.map((b) => {
+    const isChecked = (selectedId === b.id);
+    return `<label style="padding:4px 8px; border:1px solid var(--brd2); border-radius:4px; font-size:12px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+      <input type="radio" name="rm-board-radio" value="${b.id}" ${isChecked ? 'checked' : ''}> ${b.name}
+    </label>`;
+  }).join('');
+  document.getElementById('rm-boards').innerHTML = html;
+}
+
+function addBoardFromModal() {
+  const nameInput = document.getElementById('rm-new-board-name').value;
+  const newName = nameInput.trim() || `${state.boards.length + 1}`; 
+  const newId = "b" + Date.now();
+  state.boards.push({ id: newId, name: newName, initial: 0, active: true });
+  saveState();
+  document.getElementById('rm-new-board-name').value = '';
+  
+  renderBoardCheckboxesInModal(newId); 
+  renderRecords(); 
+}
+
+function openRecordModal(date = '', isEdit = false) {
+  document.getElementById('rm-title').textContent = "회차 기록 추가";
+  document.getElementById('rm-id').value = "";
+  document.getElementById('rm-create-time').value = Date.now(); 
+  document.getElementById('rm-date').value = date || todayStr();
+  
+  if (!isEdit) autoFillCasting();
+
+  document.getElementById('rm-disc').value = "";
+  document.getElementById('rm-zone').value = "";
+  document.getElementById('rm-row').value = "";
+  document.getElementById('rm-num').value = "";
+  document.getElementById('rm-memo').value = "";
+  
+  clearReceipt();
+
+  selectMult(1); 
+  renderBoardCheckboxesInModal(""); 
+
+  openModal('modal-record');
+}
+
+function saveRecord() {
+  const id = document.getElementById('rm-id').value || uuid();
+  const cTime = document.getElementById('rm-create-time').value;
+  const boardsData = {};
+  
+  const mult = parseInt(document.querySelector('input[name="rm-mult"]:checked').value) || 1;
+  const selectedBoard = document.querySelector('input[name="rm-board-radio"]:checked')?.value;
+  
+  if(selectedBoard) { boardsData[selectedBoard] = mult; }
+
+  const record = {
+    id: id,
+    createTime: parseInt(cTime) || Date.now(),
+    date: document.getElementById('rm-date').value,
+    time: document.getElementById('rm-time').value,
+    cast1: document.getElementById('rm-cast1') ? document.getElementById('rm-cast1').value : '',
+    cast2: document.getElementById('rm-cast2') ? document.getElementById('rm-cast2').value : '',
+    cast3: document.getElementById('rm-cast3') ? document.getElementById('rm-cast3').value : '',
+    cast4: document.getElementById('rm-cast4') ? document.getElementById('rm-cast4').value : '',
+    cast5: document.getElementById('rm-cast5') ? document.getElementById('rm-cast5').value : '',
+    cast6: document.getElementById('rm-cast6') ? document.getElementById('rm-cast6').value : '',
+    discount: document.getElementById('rm-disc').value,
+    seatZone: document.getElementById('rm-zone').value,
+    seatRow: document.getElementById('rm-row').value.toUpperCase(),
+    seatNum: document.getElementById('rm-num').value,
+    boards: boardsData,
+    receipt: currentReceiptBase64,
+    memo: document.getElementById('rm-memo').value
+  };
+
+  const existingIdx = state.records.findIndex(r => r.id === id);
+  if(existingIdx >= 0) state.records[existingIdx] = record;
+  else state.records.push(record);
+
+  saveState(); closeModal('modal-record'); renderRecords(); renderCoupons(); renderCalendar(); renderStats();
+}
+
+function editRecord(id) {
+  const r = state.records.find(x => x.id === id);
+  if(!r) return;
+  
+  openRecordModal('', true);
+  document.getElementById('rm-title').textContent = "회차 기록 수정";
+  document.getElementById('rm-id').value = r.id;
+  document.getElementById('rm-create-time').value = r.createTime || Date.now();
+  document.getElementById('rm-date').value = r.date;
+  
+  autoFillCasting();
+  const timeSelect = document.getElementById('rm-time');
+  if (!timeSelect.querySelector(`option[value="${r.time}"]`)) {
+    timeSelect.innerHTML += `<option value="${r.time}">${r.time}</option>`;
+  }
+  
+  document.getElementById('rm-time').value = r.time || '';
+  
+  for(let i=1; i<=6; i++) {
+    const el = document.getElementById(`rm-cast${i}`);
+    if(el) el.value = r[`cast${i}`] || '';
+  }
+  
+  document.getElementById('rm-disc').value = r.discount === '교환/나눔' ? '교환' : (r.discount || '');
+  
+  document.getElementById('rm-zone').value = r.seatZone || "";
+  document.getElementById('rm-row').value = r.seatRow || "";
+  document.getElementById('rm-num').value = r.seatNum || "";
+  document.getElementById('rm-memo').value = r.memo || "";
+
+  if (r.receipt) {
+    currentReceiptBase64 = r.receipt;
+    document.getElementById('rm-receipt-img').src = currentReceiptBase64;
+    document.getElementById('rm-receipt-preview').style.display = 'block';
+  } else {
+    clearReceipt();
+  }
+
+  let assumedMult = 1;
+  let selectedId = "";
+  if (r.boards) {
+    const keys = Object.keys(r.boards);
+    if (keys.length > 0) {
+      selectedId = keys[0];
+      assumedMult = r.boards[selectedId];
+    }
+  }
+  if ([1,2,3].includes(assumedMult)) selectMult(assumedMult);
+  else selectMult(1);
+
+  renderBoardCheckboxesInModal(selectedId); 
+}
+
+function deleteRecord(id) {
+  if(confirm("기록을 삭제하시겠습니까?")) {
+    state.records = state.records.filter(r => r.id !== id);
+    saveState(); renderRecords(); renderCalendar(); renderCoupons(); renderStats();
+  }
+}
+
+// ---------------------------
+// 상세 정보 팝업 & 미니맵
+// ---------------------------
+function openDetailModal(id) {
+  const r = state.records.find(x => x.id === id);
+  if(!r) return;
+
+  const d = new Date(r.date + 'T00:00:00');
+  const dow = ['일','월','화','수','목','금','토'][d.getDay()];
+  
+  document.getElementById('dt-title').textContent = `${r.date} (${dow}) ${r.time}`;
+  
+  let casts = [];
+  if(r.cast1) casts.push(r.cast1);
+  if(r.cast2) casts.push(r.cast2);
+  if(r.cast3) casts.push(r.cast3);
+  if(r.cast4) casts.push(r.cast4);
+  if(r.cast5) casts.push(r.cast5);
+  if(r.cast6) casts.push(r.cast6);
+  document.getElementById('dt-cast').textContent = casts.length > 0 ? casts.join(' · ') : '-';
+  
+  let seatStr = '-';
+  if (r.seatZone) {
+    seatStr = `${r.seatZone}`;
+    if (r.seatRow != null && r.seatRow !== "") seatStr += ` ${r.seatRow}열`;
+    if (r.seatNum != null && r.seatNum !== "") seatStr += ` ${r.seatNum}번`;
+  }
+  
+  document.getElementById('dt-seat').textContent = seatStr;
+  
+  const detailsRow = document.getElementById('dt-details-row');
+  if (r.receipt) {
+    currentViewReceipt = r.receipt;
+    detailsRow.style.display = 'flex';
+  } else {
+    currentViewReceipt = "";
+    detailsRow.style.display = 'none';
+  }
+  
+  document.getElementById('dt-minimap').innerHTML = renderMiniMap(r.seatZone, r.seatRow, parseInt(r.seatNum));
+
+  document.getElementById('dt-btn-edit').onclick = () => { closeModal('modal-detail'); editRecord(id); };
+  document.getElementById('dt-btn-delete').onclick = () => { closeModal('modal-detail'); deleteRecord(id); };
+
+  openModal('modal-detail');
+}
+
+function renderMiniMap(selZone, selRow, selNum) {
+  let hmHtml = '<div class="mini-hm-container">';
+  
+  THEATER_ZONES.forEach(z => {
+    hmHtml += `<div style="display:flex; flex-direction:column; align-items:center; margin-bottom:10px;">`;
+    hmHtml += `<div style="font-size:11px; font-weight:700; color:var(--txt2); margin-bottom:8px;">${z.name}</div>`;
+    hmHtml += `<div style="display:flex; gap:10px; align-items:flex-start;">`;
+    
+    if (z.left) {
+      hmHtml += `<div style="display:flex; flex-direction:column; gap:2px; align-items:center;">`;
+      hmHtml += `<div class="mini-row-label" style="margin:0 0 4px 0;">${z.left.id}</div>`;
+      z.left.map.forEach(col => {
+        if (col === null) {
+          hmHtml += `<div class="mini-seat-cell hidden"></div>`;
+        } else {
+          const isSel = (z.name === selZone && z.left.id === selRow && col === selNum);
+          hmHtml += `<div class="mini-seat-cell ${isSel ? 'highlight' : ''}"></div>`;
+        }
+      });
+      hmHtml += `</div>`;
+    }
+
+    hmHtml += `<div class="zone-col" style="gap:2px;">`;
+    z.rows.forEach(rowInfo => {
+      hmHtml += `<div class="mini-seat-row"><div class="mini-row-label">${rowInfo.id}</div>`;
+      rowInfo.map.forEach(col => {
+        if (col === 'a') {
+           hmHtml += `<div class="mini-seat-aisle"></div>`;
+        } else if (col === null) {
+           hmHtml += `<div class="mini-seat-cell hidden"></div>`;
+        } else {
+           const isSel = (z.name === selZone && rowInfo.id === selRow && col === selNum);
+           hmHtml += `<div class="mini-seat-cell ${isSel ? 'highlight' : ''}"></div>`;
+        }
+      });
+      hmHtml += `</div>`;
+    });
+    hmHtml += `</div>`;
+
+    if (z.right) {
+      hmHtml += `<div style="display:flex; flex-direction:column; gap:2px; align-items:center;">`;
+      hmHtml += `<div class="mini-row-label" style="margin:0 0 4px 0;">${z.right.id}</div>`;
+      z.right.map.forEach(col => {
+        if (col === null) {
+          hmHtml += `<div class="mini-seat-cell hidden"></div>`;
+        } else {
+          const isSel = (z.name === selZone && z.right.id === selRow && col === selNum);
+          hmHtml += `<div class="mini-seat-cell ${isSel ? 'highlight' : ''}"></div>`;
+        }
+      });
+      hmHtml += `</div>`;
+    }
+    hmHtml += `</div></div>`;
+  });
+  
+  hmHtml += '</div>';
+  return hmHtml;
+}
+
+// ============================================================
+// 5. TAB 2: CALENDAR 
+// ============================================================
+let curYear = new Date().getFullYear();
+let curMonth = new Date().getMonth(); 
+
+function changeMonth(diff) {
+  curMonth += diff;
+  if(curMonth > 11) { curMonth = 0; curYear++; }
+  if(curMonth < 0) { curMonth = 11; curYear--; }
+  renderCalendar();
+}
+
+function renderCalFilters() {
+  let html = '';
+  CONFIG.ROLES.forEach((role, idx) => {
+    const roleKey = `cast${idx+1}`;
+    html += `<div class="cal-filter-group">
+      <div class="cal-filter-label">${role.label}</div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">`;
+    role.actors.forEach(actor => {
+      const isActive = calFilters[roleKey] && calFilters[roleKey].includes(actor);
+      html += `<button class="cal-filter-btn ${isActive ? 'active' : ''}" onclick="toggleCalFilter('${roleKey}', '${actor}')">${actor}</button>`;
+    });
+    html += `</div></div>`;
+  });
+  document.getElementById('cal-filter-wrap').innerHTML = html;
+}
+
+function toggleCalFilter(roleKey, actor) {
+  if (!calFilters[roleKey]) calFilters[roleKey] = [];
+  const idx = calFilters[roleKey].indexOf(actor);
+  if (idx > -1) calFilters[roleKey].splice(idx, 1);
+  else calFilters[roleKey].push(actor);
+  renderCalFilters(); 
+}
+
+function applyCalFilter() { renderCalendar(); }
+function resetCalFilter() { 
+  calFilters = {};
+  CONFIG.ROLES.forEach((r, idx) => { calFilters[`cast${idx+1}`] = []; });
+  renderCalFilters(); renderCalendar(); 
+}
+
+function renderCalendar() {
+  document.getElementById('cal-month-title').textContent = `${curYear}년 ${curMonth+1}월`;
+  
+  const firstDay = new Date(curYear, curMonth, 1).getDay();
+  const daysInMonth = new Date(curYear, curMonth+1, 0).getDate();
+  const totalCells = firstDay + daysInMonth;
+  const weeks = Math.ceil(totalCells / 7);
+  const monthStr = `${curYear}-${String(curMonth+1).padStart(2,'0')}`;
+  const monthStart = `${monthStr}-01`;
+  const monthEnd = `${monthStr}-${String(daysInMonth).padStart(2,'0')}`;
+
+  const evts = state.events && state.events.length ? state.events : [];
+  const segments = [];
+  
+  CONFIG.EVENTS.forEach(ev => {
+    if (ev.endDate < monthStart || ev.startDate > monthEnd) return;
+    const clampedStart = ev.startDate < monthStart ? monthStart : ev.startDate;
+    const clampedEnd   = ev.endDate   > monthEnd   ? monthEnd   : ev.endDate;
+    const startCell = firstDay + parseInt(clampedStart.slice(8)) - 1;
+    const endCell   = firstDay + parseInt(clampedEnd.slice(8))   - 1;
+    
+    for (let w = Math.floor(startCell/7); w <= Math.floor(endCell/7); w++) {
+      const sc = Math.max(startCell, w*7) % 7;
+      const ec = Math.min(endCell,   w*7+6) % 7;
+      const used = segments.filter(s => s.week === w);
+      let row = 0;
+      while (row < 3) {
+        const conflict = used.filter(s => s.row === row).some(s => !(ec < s.startCol || sc > s.endCol));
+        if (!conflict) break;
+        row++;
+      }
+      if (row < 3) segments.push({ week: w, startCol: sc, endCol: ec, color: ev.color, name: ev.name, row });
+    }
+  });
+
+  const dow = ['일','월','화','수','목','금','토'];
+  let html = `<div class="cal-grid">`;
+  dow.forEach(d => html += `<div class="cal-dow">${d}</div>`);
+  html += `</div>`; 
+  
+  const isAnyFilterActive = Object.values(calFilters).some(arr => arr.length > 0);
+
+  for(let w=0; w<weeks; w++) {
+    const wSegs = segments.filter(s => s.week === w);
+    const maxRow = wSegs.length ? Math.max(...wSegs.map(s => s.row)) + 1 : 0;
+    const evHeight = maxRow * 16; 
+
+    html += `<div class="cal-grid" style="margin-top:-1px;">`;
+    for(let col=0; col<7; col++) {
+      const cell = w * 7 + col;
+      const day = cell - firstDay + 1;
+      
+      if(cell < firstDay || day > daysInMonth) {
+        html += `<div class="cal-day empty"></div>`;
+        continue;
+      }
+      
+      const dateStr = `${monthStr}-${String(day).padStart(2,'0')}`;
+      const isToday = dateStr === todayStr();
+      const isSun = new Date(curYear, curMonth, day).getDay() === 0;
+      const isSat = new Date(curYear, curMonth, day).getDay() === 6;
+      
+      let dayItems = [];
+      (state.schedule || []).filter(s => s.date === dateStr).forEach(s => {
+        dayItems.push({ time: s.time, cast1: s.cast1, cast2: s.cast2, cast3: s.cast3, cast4: s.cast4, cast5: s.cast5, cast6: s.cast6, isBooked: false, records: [] });
+      });
+      state.records.filter(r => r.date === dateStr).forEach(r => {
+        let existing = dayItems.find(i => i.time === r.time);
+        if (existing) { 
+            existing.records.push(r);
+            existing.cast1 = r.cast1; existing.cast2 = r.cast2; existing.cast3 = r.cast3;
+            existing.cast4 = r.cast4; existing.cast5 = r.cast5; existing.cast6 = r.cast6;
+        } else { 
+            dayItems.push({ time: r.time, cast1: r.cast1, cast2: r.cast2, cast3: r.cast3, cast4: r.cast4, cast5: r.cast5, cast6: r.cast6, isBooked: false, records: [r] }); 
+        }
+      });
+
+      dayItems = dayItems.filter(i => {
+         let keepForRecord = true;
+         if (i.records && i.records.length > 0) {
+           const nonExchangeRecords = i.records.filter(r => r.discount !== '교환' && r.discount !== '교환/나눔');
+           if (nonExchangeRecords.length > 0) {
+             i.isBooked = true;
+             const hasSeat = nonExchangeRecords.some(r => r.seatZone && r.seatZone.trim() !== "");
+             i.isUnseated = !hasSeat; 
+           } else {
+             const inSchedule = state.schedule && state.schedule.some(s => s.date === dateStr && s.time === i.time);
+             if (!inSchedule) keepForRecord = false;
+           }
+         }
+         
+         if (!keepForRecord) return false;
+
+         if (isAnyFilterActive) {
+           let matchCount = 0;
+           let activeRoleCount = 0;
+           Object.keys(calFilters).forEach((roleKey, idx) => {
+             const selectedActors = calFilters[roleKey];
+             if (selectedActors.length > 0) {
+               activeRoleCount++;
+               const currentCast = i[`cast${idx + 1}`];
+               if (currentCast && selectedActors.includes(currentCast)) matchCount++;
+             }
+           });
+           if (matchCount < activeRoleCount) return false; 
+         }
+         return true;
+      });
+
+      dayItems.sort((a,b) => a.time.localeCompare(b.time));
+
+      let chipsHtml = dayItems.map(i => {
+        let cls = '';
+        if (i.isBooked) { cls = i.isUnseated ? 'unseated' : 'booked'; }
+        let casts = [];
+        if(i.cast1) casts.push(i.cast1);
+        if(i.cast2) casts.push(i.cast2);
+        if(i.cast3) casts.push(i.cast3);
+        if(i.cast4) casts.push(i.cast4);
+        if(i.cast5) casts.push(i.cast5);
+        if(i.cast6) casts.push(i.cast6);
+        
+        return `<div class="cs-chip ${cls}">
+          <div class="cs-time">${i.time}</div>
+          <div class="cs-cast">${casts.length > 0 ? casts.join('·') : '-'}</div>
+        </div>`;
+      }).join('');
+
+      html += `<div class="cal-day ${isToday ? 'today' : ''} ${isSun ? 'sun' : ''} ${isSat ? 'sat' : ''}" onclick="openRecordModal('${dateStr}')">
+        <span class="cal-day-num">${day}</span>
+        <div style="height:${evHeight}px; flex-shrink:0; width:100%;"></div>
+        ${chipsHtml}
+      </div>`;
+    }
+
+    if (maxRow > 0) {
+      html += `<div style="position:absolute; top:24px; left:0; right:0; pointer-events:none;">`;
+      for (let row = 0; row < maxRow; row++) {
+        html += `<div style="position:relative; height:15px; margin-bottom:1px;">`;
+        wSegs.filter(s => s.row === row).forEach(s => {
+          const leftPct  = (s.startCol / 7 * 100).toFixed(2);
+          const widthPct = ((s.endCol - s.startCol + 1) / 7 * 100).toFixed(2);
+          html += `<div style="position:absolute; left:${leftPct}%; width:calc(${widthPct}% - 2px); height:14px; background:${s.color}; border-radius:2px; display:flex; align-items:center; padding:0 4px; overflow:hidden; box-shadow: 0 0 5px rgba(255,255,255,0.2);">
+            <span style="font-size:9px; font-weight:700; color:#111; white-space:nowrap;">${s.name}</span>
+          </div>`;
+        });
+        html += `</div>`;
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+  }
+  document.getElementById('cal-grid-container').innerHTML = html;
+}
+
+// ============================================================
+// 6. TAB 3: COUPON & STAMPS 
+// ============================================================
+function calculateWalletBalances() {
+  let current = {};
+  let final = {};
+  CONFIG.WALLET_FIELDS.forEach(f => { current[f.id] = 0; final[f.id] = 0; });
+  
+  const today = todayStr();
+
+  state.wallet.forEach(w => {
+    CONFIG.WALLET_FIELDS.forEach(f => {
+      if(w.items[f.id]) {
+        const val = w.type === 'add' ? w.items[f.id] : -w.items[f.id];
+        final[f.id] += val;
+        if (w.date <= today) current[f.id] += val;
+      }
+    });
+  });
+  
+  let boardCum = {};
+  state.boards.forEach(b => boardCum[b.id] = b.initial || 0);
+
+  let sortedRecords = [...state.records].sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+
+  sortedRecords.forEach(r => {
+    const isNoReward = (r.discount === '교환' || r.discount === '교환/나눔' || r.discount === '나눔');
+
+    if (!isNoReward) {
+      final['re'] += 1;
+      if (r.date <= today) current['re'] += 1;
+      
+      const discDef = CONFIG.DISCOUNTS.find(d => d.value === r.discount);
+      if(discDef && discDef.useWallet) {
+        final[discDef.useWallet] -= 1;
+        if (r.date <= today) current[discDef.useWallet] -= 1;
+      }
+    }
+    
+    if (r.boards) {
+      Object.keys(r.boards).forEach(bid => {
+        let before = boardCum[bid] || 0;
+        boardCum[bid] = before + r.boards[bid];
+        if (before < 5 && boardCum[bid] >= 5) {
+          final['d40'] += 2;
+          final['d50_onsite'] += 1;
+          if (r.date <= today) {
+            current['d40'] += 2;
+            current['d50_onsite'] += 1;
+          }
+        }
+      });
+    }
+  });
+  
+  return { current, final };
+}
+
+function getCombinedWallet() {
+  let combined = [];
+  
+  state.wallet.forEach(w => {
+     combined.push({
+       ...w, 
+       isAuto: false, 
+       defaultOrder: w.order !== undefined ? w.order : (w.createTime || Date.now())
+     });
+  });
+  
+  let boardCum = {};
+  state.boards.forEach(b => boardCum[b.id] = b.initial || 0);
+  let sortedRecords = [...state.records].sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+
+  sortedRecords.forEach(r => {
+    const isNoReward = (r.discount === '교환' || r.discount === '교환/나눔' || r.discount === '나눔');
+
+    if (!isNoReward) {
+      const dateParts = r.date.split('-');
+      const m = parseInt(dateParts[1], 10);
+      const d = parseInt(dateParts[2], 10);
+
+      const discDef = CONFIG.DISCOUNTS.find(disc => disc.value === r.discount);
+      if (discDef && discDef.useWallet) {
+        combined.push({
+          id: 'auto_sub_' + r.id, date: r.date, time: r.time, type: 'sub', items: { [discDef.useWallet]: 1 },
+          memo: `${m}/${d} ${r.time} ${discDef.label} 사용`, isAuto: true, defaultOrder: 1
+        });
+      }
+
+      combined.push({
+        id: 'auto_add_' + r.id, date: r.date, time: r.time, type: 'add', items: { re: 1 },
+        memo: `${m}/${d} ${r.time} 관극 획득`, isAuto: true, defaultOrder: 2
+      });
+    }
+
+    if (r.boards) {
+      Object.keys(r.boards).forEach(bid => {
+        let before = boardCum[bid] || 0;
+        boardCum[bid] = before + r.boards[bid];
+        if (before < 5 && boardCum[bid] >= 5) {
+          combined.push({
+            id: 'auto_ms_' + r.id + '_' + bid,
+            date: r.date, time: r.time, type: 'add',
+            items: { d40: 2, d50_onsite: 1 },
+            memo: "5🎁 40% 2매, 현장50% 1매 획득", 
+            isAuto: true, defaultOrder: 3
+          });
+        }
+      });
+    }
+  });
+
+  if(!state.walletOrder) state.walletOrder = {};
+  
+  combined.forEach(w => {
+    if(state.walletOrder[w.id] !== undefined) {
+      w.sortVal = state.walletOrder[w.id];
+    } else {
+      w.sortVal = w.defaultOrder;
+    }
+  });
+
+  return combined;
+}
+
+function moveWalletOrder(id, delta, dateStr) {
+  let combined = getCombinedWallet();
+  let siblings = combined.filter(w => w.date === dateStr);
+
+  siblings.sort((a,b) => {
+    if (a.sortVal !== b.sortVal) return a.sortVal - b.sortVal;
+    const timeA = a.time || "";
+    const timeB = b.time || "";
+    return timeA.localeCompare(timeB);
+  });
+
+  const currIdx = siblings.findIndex(w => w.id === id);
+  if (currIdx < 0) return;
+  const targetIdx = currIdx + delta;
+
+  if (targetIdx >= 0 && targetIdx < siblings.length) {
+    if(!state.walletOrder) state.walletOrder = {};
+    
+    siblings.forEach((w, idx) => w.sortVal = idx * 10);
+    
+    const temp = siblings[currIdx].sortVal;
+    siblings[currIdx].sortVal = siblings[targetIdx].sortVal;
+    siblings[targetIdx].sortVal = temp;
+
+    siblings.forEach(w => {
+       state.walletOrder[w.id] = w.sortVal;
+    });
+
+    saveState();
+    renderCoupons();
+  }
+}
+
+function renderCoupons() {
+  const bals = calculateWalletBalances();
+  
+  const getColor = (val) => {
+    if(val > 0) return 'var(--txt)'; 
+    if(val < 0) return '#ef4444'; 
+    return 'var(--txt4)'; 
+  };
+
+  document.getElementById('wallet-cards').innerHTML = CONFIG.WALLET_FIELDS.map(f => {
+    const cVal = bals.current[f.id];
+    const fVal = bals.final[f.id];
+    return `
+      <div class="wcard" style="width:calc(33.33% - 6px);">
+        <div class="wcard-header">${f.label}</div>
+        <div class="wcard-body" style="flex-direction:column;">
+          <div class="wcard-half" style="border-right:none; border-bottom:1px solid var(--brd2); padding:8px 0;">
+            <div class="wcard-label-curr" style="color:var(--txt2);">현재</div>
+            <div class="wcard-val" style="color:${getColor(cVal)}; text-shadow:0 0 5px rgba(255,255,255,0.3);">${cVal}</div>
+          </div>
+          <div class="wcard-half" style="padding:8px 0;">
+            <div class="wcard-label-final">최종</div>
+            <div class="wcard-val" style="color:var(--txt3)">${fVal}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  let combinedWallet = getCombinedWallet();
+
+  combinedWallet.sort((a,b) => {
+    if (a.date !== b.date) return a.date.localeCompare(b.date); 
+    if (a.sortVal !== b.sortVal) return a.sortVal - b.sortVal;
+    const timeA = a.time || "";
+    const timeB = b.time || "";
+    return timeA.localeCompare(timeB);
+  });
+
+  const histTbody = document.getElementById('wallet-history-body');
+  if(combinedWallet.length === 0) {
+    histTbody.innerHTML = `<tr><td colspan="7" style="padding:20px; color:var(--txt4);">기록이 없습니다</td></tr>`;
+  } else {
+    const getDow = (dStr) => { const d = new Date(dStr + 'T00:00:00'); return ['일','월','화','수','목','금','토'][d.getDay()]; };
+    histTbody.innerHTML = combinedWallet.map(w => {
+      const ds = w.date.split('-');
+      const dateDisp = `${parseInt(ds[1])}.${parseInt(ds[2])}(${getDow(w.date)})`;
+      const isAdd = w.type === 'add';
+      const typeHtml = isAdd ? `<span style="color:var(--txt); font-weight:700; font-size:16px;">+</span>` : `<span style="color:var(--txt); font-weight:700; font-size:16px;">-</span>`;
+      let colHtml = '';
+      CONFIG.WALLET_FIELDS.forEach(f => {
+        let valStr = '';
+        if (w.items[f.id]) {
+          const val = w.items[f.id];
+          valStr = isAdd ? `<span style="color:var(--txt); font-weight:700;">+${val}</span>` : `<span style="color:#ef4444; font-weight:700;">-${val}</span>`;
+        }
+        colHtml += `<td>${valStr}</td>`;
+      });
+      
+      let editDelBtn = w.isAuto ? `<span style="font-size:10px; color:var(--dim); margin-left:4px;">자동 연동</span>` : `
+          <button class="btn sm" onclick="editWallet('${w.id}')" style="padding:2px 4px; margin-left:6px; color:var(--txt);">✎</button>
+          <button class="btn sm" onclick="deleteWallet('${w.id}')" style="padding:2px 4px; color:#ef4444; border-color:#ef4444;">✕</button>
+      `;
+
+      let ctrlHtml = `
+          <button class="btn sm ghost" style="padding:2px 6px; font-size:9px;" onclick="moveWalletOrder('${w.id}', 1, '${w.date}')">▼</button>
+          <button class="btn sm ghost" style="padding:2px 6px; font-size:9px;" onclick="moveWalletOrder('${w.id}', -1, '${w.date}')">▲</button>
+          ${editDelBtn}
+        `;
+      return `<tr><td>${dateDisp}</td><td>${typeHtml}</td>${colHtml}<td style="text-align:left;">${w.memo}</td><td style="white-space:nowrap;">${ctrlHtml}</td></tr>`;
+    }).join('');
+  }
+  renderBoardStatus();
+}
+
+function initWalletForm() {
+  document.getElementById('wm-coupon-inputs').innerHTML = CONFIG.WALLET_FIELDS.map(f => `
+    <div style="background:var(--bg3); border:1px solid var(--brd2); padding:8px; border-radius:6px; text-align:center;">
+      <div style="font-size:10px; color:var(--txt2); margin-bottom:4px; line-height:1.2;">${f.label}</div>
+      <input type="number" id="wm-val-${f.id}" class="finput" style="text-align:center; padding:4px; font-weight:700;" value="0" min="0">
+    </div>
+  `).join('');
+}
+
+function selectWmType(val) {
+  document.getElementById('wm-type-label-add').classList.remove('active', 'grn');
+  document.getElementById('wm-type-label-sub').classList.remove('active', 'grn');
+  document.getElementById(`wm-type-label-${val}`).classList.add('active', 'grn');
+}
+
+function openWalletModal() {
+  document.getElementById('wm-title').textContent = "할인권 추가/차감";
+  document.getElementById('wm-id').value = "";
+  document.getElementById('wm-create-time').value = Date.now();
+  document.getElementById('wm-date').value = todayStr();
+  selectWmType('add');
+  document.getElementById('wm-memo').value = "";
+  CONFIG.WALLET_FIELDS.forEach(f => document.getElementById(`wm-val-${f.id}`).value = "0");
+  openModal('modal-wallet');
+}
+
+function saveWallet() {
+  const id = document.getElementById('wm-id').value || uuid();
+  const cTime = document.getElementById('wm-create-time').value;
+  let items = {};
+  let hasValue = false;
+  CONFIG.WALLET_FIELDS.forEach(f => {
+    const val = parseInt(document.getElementById(`wm-val-${f.id}`).value) || 0;
+    if(val > 0) { items[f.id] = val; hasValue = true; }
+  });
+  if(!hasValue) { alert("수량을 1개 이상 입력하세요."); return; }
+
+  const entry = {
+    id: id, 
+    date: document.getElementById('wm-date').value,
+    type: document.querySelector('input[name="wm-type"]:checked').value,
+    memo: document.getElementById('wm-memo').value, 
+    items: items, 
+    createTime: parseInt(cTime) || Date.now() 
+  };
+  const idx = state.wallet.findIndex(w => w.id === id);
+  if(idx >= 0) { entry.order = state.wallet[idx].order; state.wallet[idx] = entry; } 
+  else { state.wallet.push(entry); }
+  saveState(); closeModal('modal-wallet'); renderCoupons();
+}
+
+function editWallet(id) {
+  const w = state.wallet.find(x => x.id === id);
+  if(!w) return;
+  document.getElementById('wm-title').textContent = "할인권 내역 수정";
+  document.getElementById('wm-id').value = w.id;
+  document.getElementById('wm-create-time').value = w.createTime || Date.now();
+  document.getElementById('wm-date').value = w.date;
+  selectWmType(w.type);
+  document.getElementById('wm-memo').value = w.memo;
+  CONFIG.WALLET_FIELDS.forEach(f => { document.getElementById(`wm-val-${f.id}`).value = w.items[f.id] || 0; });
+  openModal('modal-wallet');
+}
+
+function deleteWallet(id) {
+  if(confirm("기록을 삭제하시겠습니까?")) {
+    state.wallet = state.wallet.filter(w => w.id !== id);
+    saveState(); renderCoupons();
+  }
+}
+
+function deleteBoard(boardId) {
+  const board = state.boards.find(b => b.id === boardId);
+  if (!board) return;
+  if (confirm(`'${board.name}' 도장판을 삭제하시겠습니까?\n(도장판을 삭제해도 관극 기록은 지워지지 않으며 '선택 안 함'으로 변경됩니다.)`)) {
+    state.boards = state.boards.filter(b => b.id !== boardId);
+    state.records.forEach(r => {
+      if (r.boards && r.boards[boardId] !== undefined) {
+        delete r.boards[boardId];
+      }
+    });
+    saveState();
+    renderCoupons();
+    renderRecords();
+  }
+}
+
+function editBoardName(boardId) {
+  const board = state.boards.find(b => b.id === boardId);
+  if (!board) return;
+  const newName = prompt("도장판의 새로운 이름을 입력하세요:", board.name);
+  if (newName !== null && newName.trim() !== "") {
+    board.name = newName.trim();
+    saveState();
+    renderCoupons();
+    renderRecords();
+  }
+}
+
+function renderBoardStatus() {
+  let currBoardCounts = {};
+  let finalBoardCounts = {};
+  state.boards.forEach(b => { currBoardCounts[b.id] = 0; finalBoardCounts[b.id] = 0; });
+  
+  const today = todayStr();
+  state.records.forEach(r => {
+    if(r.boards) { 
+      Object.keys(r.boards).forEach(bid => { 
+        if(finalBoardCounts[bid] !== undefined) { 
+          finalBoardCounts[bid] += r.boards[bid]; 
+          if(r.date <= today) currBoardCounts[bid] += r.boards[bid];
+        } 
+      }); 
+    }
+  });
+
+  const maxMilestone = Math.max(...CONFIG.STAMP_MILESTONES);
+
+  document.getElementById('board-status-container').innerHTML = state.boards.map(b => {
+    const cCnt = currBoardCounts[b.id];
+    const fCnt = finalBoardCounts[b.id];
+
+    const nxt = CONFIG.STAMP_MILESTONES.find(m => m > cCnt); 
+    const pct = Math.min(100, (cCnt / maxMilestone) * 100); 
+    
+    let histRows = state.records
+      .filter(r => r.boards && r.boards[b.id])
+      .sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
+      .map(r => `<tr><td style="padding:4px; font-weight:600;">${r.date.substring(5).replace('-','.')}</td><td style="padding:4px;">${r.time}</td><td style="padding:4px; color:var(--txt); font-weight:700;">+${r.boards[b.id]}</td></tr>`)
+      .join('');
+    
+    if(!histRows) histRows = `<tr><td colspan="3" style="padding:10px; color:var(--txt4);">적립 내역이 없습니다</td></tr>`;
+
+    let markersHtml = CONFIG.STAMP_MILESTONES.map(m => {
+      let mPct = (m / maxMilestone) * 100;
+      return `<div style="position:absolute; left:${mPct}%; top:-2px; bottom:-2px; width:2px; background:#fff; z-index:2; border-radius:1px; opacity:0.8; box-shadow:0 0 4px rgba(255,255,255,0.8);"></div>`;
+    }).join('');
+
+    const getBoardColor = (val) => {
+      if (val > 0) return 'var(--txt)';
+      return 'var(--txt4)';
+    };
+
+    let statusMsg = '';
+    if (cCnt >= 5) {
+       statusMsg = `<span style="color:var(--txt); font-weight:700; text-shadow:0 0 5px rgba(255,255,255,0.3);">✓ 도장판 완료 (최종 혜택 획득)</span>`;
+    } else if (nxt) {
+       statusMsg = `다음(${nxt}개)까지 <span style="color:var(--txt);">${nxt - cCnt}</span>개 남음`;
+    } else {
+       statusMsg = `<span style="color:var(--txt); font-weight:700; text-shadow:0 0 5px rgba(255,255,255,0.3);">✓ 최종 보상 달성 완료</span>`;
+    }
+
+    return `<div style="background:var(--bg3); border:1px solid var(--brd2); padding:12px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.2);">
+      <div style="margin-bottom:8px;">
+        <div class="flex-between" style="margin-bottom:4px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+             <span style="font-weight:700; font-size:13px; color:var(--txt);">${b.name}</span>
+             <button class="btn sm ghost" style="padding:0 4px; font-size:10px; color:var(--txt3);" onclick="editBoardName('${b.id}')">수정</button>
+             <button class="btn sm ghost" style="padding:0 4px; font-size:10px; color:#ef4444;" onclick="deleteBoard('${b.id}')">삭제</button>
+          </div>
+          <span style="font-size:10px; color:var(--txt4); cursor:pointer;" onclick="toggleCollapsible('board-hist-${b.id}')">상세 ▼</span>
+        </div>
+        <div style="font-size:11px; color:var(--txt3);">
+          현재 <span style="font-size:16px; color:${getBoardColor(cCnt)}; font-weight:700; font-family:'IBM Plex Sans KR'; text-shadow:0 0 5px rgba(255,255,255,0.2);">${cCnt}</span> / 최종 <span style="font-size:16px; color:var(--txt3); font-weight:700; font-family:'IBM Plex Sans KR';">${fCnt}</span>
+        </div>
+      </div>
+      <div style="font-size:10px; color:var(--txt2); margin-bottom:6px;">
+        ${statusMsg}
+      </div>
+      
+      <div style="height:6px; background:var(--bg4); border-radius:3px; position:relative; box-shadow:inset 0 1px 3px rgba(0,0,0,0.5);">
+        ${markersHtml}
+        <div style="position:absolute; left:0; top:0; bottom:0; width:${pct}%; background:var(--txt); border-radius:3px; z-index:1; transition:width 0.3s ease; box-shadow:0 0 8px rgba(255,255,255,0.5);"></div>
+      </div>
+      
+      <div id="board-hist-${b.id}" class="collapsible-content" style="margin-top:10px; border-top:1px dashed var(--brd2); padding-top:10px;">
+        <table style="width:100%; font-size:11px; text-align:center;">
+          <thead><tr style="color:var(--txt3);"><th>날짜</th><th>시간</th><th>적립</th></tr></thead>
+          <tbody>${histRows}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addBoard() {
+  const name = prompt("새 도장판 이름을 입력하세요 (비우면 자동 번호)");
+  if(name === null) return;
+  const newName = name.trim() || `${state.boards.length + 1}`; 
+  state.boards.push({ id: "b" + Date.now(), name: newName, initial: 0, active: true });
+  saveState(); renderCoupons(); renderRecords();
+}
+
+// ============================================================
+// 7. STATS (정밀 좌석 히트맵 포함)
+// ============================================================
+function renderStats() {
+  let validRecords = [];
+  let grouped = {};
+
+  state.records.forEach(r => {
+    if (r.discount === '교환' || r.discount === '교환/나눔' || r.discount === '나눔') return;
+    if (!r.seatZone || r.seatZone.trim() === "") return;
+    
+    let k = r.date + '_' + r.time;
+    if (!grouped[k]) grouped[k] = [];
+    grouped[k].push(r);
+  });
+
+  for (let k in grouped) {
+    let grp = grouped[k];
+    if (grp.length === 1) {
+      validRecords.push(grp[0]);
+    } else {
+      let seated = grp.find(x => x.seatRow !== "" && x.seatNum !== "");
+      validRecords.push(seated || grp[0]);
+    }
+  }
+
+  let actorStatsHtml = `<tr>
+    <th style="color:var(--txt2); width:30%;">배역</th>
+    <th style="color:var(--txt2); width:40%;">배우</th>
+    <th style="color:var(--txt2); width:30%;">관람 횟수</th>
+  </tr>`;
+  
+  CONFIG.ROLES.forEach((role, idx) => {
+    const castKey = `cast${idx+1}`;
+    role.actors.forEach((actor, aIdx) => {
+      const myCnt = validRecords.filter(r => r[castKey] === actor).length;
+      
+      const totalCnt = (state.schedule || []).filter(s => 
+        s.cast1 === actor || s.cast2 === actor || s.cast3 === actor ||
+        s.cast4 === actor || s.cast5 === actor || s.cast6 === actor
+      ).length;
+      
+      actorStatsHtml += `<tr>`;
+      if (aIdx === 0) actorStatsHtml += `<td rowspan="${role.actors.length}" style="font-weight:700; color:var(--txt); vertical-align:middle; background:var(--bg3); border-right:1px solid var(--brd);">${role.label}</td>`;
+      actorStatsHtml += `<td style="font-weight:600; color:var(--txt2);">${actor}</td>
+      <td>
+        <span style="color:var(--red); font-weight:700; text-shadow:0 0 3px rgba(186,97,61,0.4);">${myCnt}</span>
+        <span style="color:var(--txt4); font-weight:400; font-size:11px;"> / ${totalCnt}</span>
+      </td></tr>`;
+    });
+  });
+  document.getElementById('stats-actors').innerHTML = actorStatsHtml;
+
+  let seatMap = {};
+  validRecords.forEach(r => {
+    if(r.seatZone && r.seatRow !== "" && r.seatNum !== "") {
+      const k = `${r.seatZone}-${r.seatRow.toUpperCase()}-${r.seatNum}`;
+      seatMap[k] = (seatMap[k] || 0) + 1;
+    }
+  });
+
+  const getHeatClass = (cnt) => {
+    if(cnt >= 5) return 'v5';
+    if(cnt >= 4) return 'v4';
+    if(cnt >= 3) return 'v3';
+    if(cnt >= 2) return 'v2';
+    if(cnt >= 1) return 'v1';
+    return '';
+  };
+
+  let hmHtml = '';
+  THEATER_ZONES.forEach(z => { 
+    hmHtml += `<div style="display:flex; flex-direction:column; align-items:center; margin-bottom:10px; width:100%;">`;
+    hmHtml += `<div style="font-size:11px; font-weight:700; color:var(--txt); margin-bottom:12px; text-shadow:0 0 3px rgba(255,255,255,0.3);">${z.name}</div>`;
+    
+    hmHtml += `<div style="display:flex; gap:16px; align-items:flex-start;">`;
+    
+    if (z.left) {
+      hmHtml += `<div style="display:flex; flex-direction:column; gap:3px; align-items:center;">`;
+      hmHtml += `<div class="row-label" style="margin:0 0 4px 0;">${z.left.id}</div>`;
+      z.left.map.forEach(col => {
+        if (col === null) {
+          hmHtml += `<div class="seat-cell hidden"></div>`;
+        } else {
+          const k = `${z.name}-${z.left.id}-${col}`;
+          const cnt = seatMap[k] || 0;
+          hmHtml += `<div class="seat-cell ${getHeatClass(cnt)}" title="${z.name} ${z.left.id}열 ${col}번: ${cnt}회"></div>`;
+        }
+      });
+      hmHtml += `</div>`;
+    }
+    
+    hmHtml += `<div class="zone-col">`;
+    z.rows.forEach(rowInfo => {
+      hmHtml += `<div class="seat-row"><div class="row-label">${rowInfo.id}</div>`;
+      rowInfo.map.forEach(col => {
+        if (col === 'a') {
+           hmHtml += `<div class="seat-aisle"></div>`;
+        } else if (col === null) {
+           hmHtml += `<div class="seat-cell hidden"></div>`;
+        } else {
+           const k = `${z.name}-${rowInfo.id}-${col}`;
+           const cnt = seatMap[k] || 0;
+           hmHtml += `<div class="seat-cell ${getHeatClass(cnt)}" title="${z.name} ${rowInfo.id}열 ${col}번: ${cnt}회"></div>`;
+        }
+      });
+      hmHtml += `</div>`;
+    });
+    hmHtml += `</div>`;
+
+    if (z.right) {
+      hmHtml += `<div style="display:flex; flex-direction:column; gap:3px; align-items:center;">`;
+      hmHtml += `<div class="row-label" style="margin:0 0 4px 0;">${z.right.id}</div>`;
+      z.right.map.forEach(col => {
+        if (col === null) {
+          hmHtml += `<div class="seat-cell hidden"></div>`;
+        } else {
+          const k = `${z.name}-${z.right.id}-${col}`;
+          const cnt = seatMap[k] || 0;
+          hmHtml += `<div class="seat-cell ${getHeatClass(cnt)}" title="${z.name} ${z.right.id}열 ${col}번: ${cnt}회"></div>`;
+        }
+      });
+      hmHtml += `</div>`;
+    }
+    hmHtml += `</div></div>`; 
+  });
+  
+  document.getElementById('heatmap-container').innerHTML = hmHtml;
+
+  let sessionRecords = validRecords.filter(r => r.seatZone && r.seatZone.trim() !== "");
+  let sortedSessions = [...sessionRecords].sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+  
+  const getEventName = (d) => {
+    const evs = state.events.filter(e => d >= e.startDate && d <= e.endDate);
+    return evs.map(e => e.name).join(', ') || '-';
+  };
+  
+  let sessionsHtml = sortedSessions.map(r => {
+    let casts = [];
+    if(r.cast1) casts.push(r.cast1);
+    if(r.cast2) casts.push(r.cast2);
+    if(r.cast3) casts.push(r.cast3);
+    if(r.cast4) casts.push(r.cast4);
+    if(r.cast5) casts.push(r.cast5);
+    if(r.cast6) casts.push(r.cast6);
+    const castStr = casts.length > 0 ? casts.join('·') : '-';
+
+    const shortDate = r.date.substring(5).replace('-', '.'); 
+    let longSeatStr = '-';
+    if (r.seatZone) {
+      longSeatStr = `${r.seatZone}`;
+      if (r.seatRow != null && r.seatRow !== "") longSeatStr += ` ${r.seatRow}열`;
+      if (r.seatNum != null && r.seatNum !== "") longSeatStr += ` ${r.seatNum}번`;
+    }
+    const evName = getEventName(r.date);
+    return `<tr>
+      <td onclick="openDetailModal('${r.id}')" style="cursor:pointer; text-decoration:underline; text-underline-offset:2px; color:var(--txt); font-weight:600;">${shortDate}</td>
+      <td style="color:var(--txt2);">${r.time}</td>
+      <td style="color:var(--red); font-weight:600;">${castStr}</td>
+      <td style="font-size:11px; color:var(--txt2);">${longSeatStr}</td>
+      <td style="font-size:11px; color:var(--txt); font-weight:600; white-space:normal; line-height:1.2;">${evName}</td>
+    </tr>`;
+  }).join('');
+  
+  if(!sessionsHtml) sessionsHtml = `<tr><td colspan="5" style="padding:20px; color:var(--txt4);">기록이 없습니다</td></tr>`;
+  document.getElementById('stats-sessions-body').innerHTML = sessionsHtml;
+}
+
+// ============================================================
+// 8. SETTINGS & BACKUP
+// ============================================================
+async function fetchSchedule(manual = false) {
+  const statusEl = document.getElementById('set-sch-time');
+  if (statusEl) statusEl.textContent = '불러오는 중...';
+  try {
+    const res = await fetch('./schedule.json?t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    state.schedule = data; saveState();
+    const now = new Date().toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' });
+    if (statusEl) statusEl.textContent = now;
+    if (manual) alert(`스케줄 ${data.length}개 업데이트 완료`);
+    renderCalendar();
+  } catch (e) {
+    if (statusEl) statusEl.textContent = '캐시/내장 데이터 사용 중';
+    if (manual) alert('오프라인 상태이거나 schedule.json 파일이 없습니다. 내장된 스케줄을 사용합니다.');
+  }
+}
+
+async function fetchEvents(manual = false) {
+  const statusEl = document.getElementById('set-evt-time');
+  if (statusEl) statusEl.textContent = '불러오는 중...';
+  try {
+    const res = await fetch('./events.json?t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    state.events = data; saveState();
+    const now = new Date().toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' });
+    if (statusEl) statusEl.textContent = now;
+    if (manual) alert(`이벤트 ${data.length}개 업데이트 완료`);
+    renderCalendar();
+  } catch (e) {
+    if (statusEl) statusEl.textContent = '캐시/내장 데이터 사용 중';
+    if (manual) alert('오프라인 상태이거나 events.json 파일이 없습니다. 내장된 이벤트를 사용합니다.');
+  }
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `${CONFIG.SHOW_NAME}_백업_${todayStr()}.json`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if(data.records && data.boards) {
+        if(confirm("현재 데이터를 덮어쓰시겠습니까?")) { state = data; saveState(); location.reload(); }
+      } else { alert("올바른 백업 파일이 아닙니다."); }
+    } catch(err) { alert("파일 읽기 오류"); }
+  };
+  reader.readAsText(file); e.target.value = '';
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = () => {
+  initRecordForm();
+  initWalletForm();
+  loadState();
+  
+  fetchSchedule(false);
+  fetchEvents(false);
+  renderCalendar();
+  
+  switchTab('record', document.querySelector('.tab-btn')); 
+};
+
+</script>
+
+</body>
+</html>
