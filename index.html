@@ -1171,10 +1171,11 @@ function renderCalendar() {
   const monthStart = `${monthStr}-01`;
   const monthEnd = `${monthStr}-${String(daysInMonth).padStart(2,'0')}`;
 
-  const evts = state.events && state.events.length ? state.events : [];
+  // 불러온 외부 이벤트가 있으면 그것을 쓰고, 없으면 기본 기본값을 쓰도록 변경
+  const evts = state.events && state.events.length ? state.events : CONFIG.EVENTS;
   const segments = [];
   
-  CONFIG.EVENTS.forEach(ev => {
+  evts.forEach(ev => { // 💡 CONFIG.EVENTS 대신 evts로 변경하여 연동 완료
     if (ev.endDate < monthStart || ev.startDate > monthEnd) return;
     const clampedStart = ev.startDate < monthStart ? monthStart : ev.startDate;
     const clampedEnd   = ev.endDate   > monthEnd   ? monthEnd   : ev.endDate;
