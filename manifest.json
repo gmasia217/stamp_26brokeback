@@ -1,0 +1,20 @@
+{
+  "name": "브로크백 마운틴 관극 기록",
+  "short_name": "BROKEBACK",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#eee8dc",
+  "theme_color": "#eee8dc",
+  "icons": [
+    {
+      "src": "brokeback_icon.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "brokeback_icon.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
