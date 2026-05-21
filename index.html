@@ -18,22 +18,22 @@
 
 :root {
   /* 브로크백 마운틴 라이트 테마 컬러 (포스터 테두리 배경 & 타이틀 갈색 포인트) */
-  --bg: #eee8dc;      /* 포스터 겉 테두리 (메인 배경) */
-  --bg2: #f8f5f0;     /* 카드 및 탭바 배경 (조금 더 밝게) */
-  --bg3: #e2d8c9;     /* 인풋/세그먼트 등 약간 짙은 배경 */
-  --bg4: #d5c8b5;     /* 테이블 헤더 등 더 짙은 배경 */
-  --brd: #d2c5b3;     /* 기본 테두리 */
-  --brd2: #bfb09c;    /* 강조 테두리 */
+  --bg: #eee8dc;      
+  --bg2: #f8f5f0;     
+  --bg3: #e2d8c9;     
+  --bg4: #d5c8b5;     
+  --brd: #d2c5b3;     
+  --brd2: #bfb09c;    
 
-  --txt: #2c221a;     /* 기본 텍스트 (아주 짙은 갈색/검정) */
-  --txt2: #4a3e35;    /* 서브 텍스트 */
-  --txt3: #6b5c51;    /* 부가 설명 텍스트 */
-  --txt4: #8f8072;    /* 비활성/비어있는 텍스트 */
+  --txt: #2c221a;     
+  --txt2: #4a3e35;    
+  --txt3: #6b5c51;    
+  --txt4: #8f8072;    
   --dim: #a39485;
 
-  --red: #8e472d;     /* 타이틀 글씨 갈색 (포인트 컬러 메인) */
-  --red2: #6d331e;    /* 포인트 컬러 (호버 등 더 짙은 색) */
-  --red3: #ad5a3d;    /* 포인트 컬러 (조금 밝은 색) */
+  --red: #8e472d;     
+  --red2: #6d331e;    
+  --red3: #ad5a3d;    
   --red4: #d17c5e;
 
   --grn: #4f6354;
@@ -133,7 +133,7 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
 /* CALENDAR & EVENTS */
 .cal-filter-group { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
 .cal-filter-label { font-size:12px; color:var(--txt2); width:65px; font-weight:700; }
-.cal-filter-btn { background:var(--bg3); border:1px solid var(--brd2); color:var(--txt2); padding:4px 10px; border-radius:4px; font-size:12px; cursor:pointer; transition:all 0.2s; font-weight:600; }
+.cal-filter-btn { background:var(--bg3); border:1px solid var(--brd2); color:var(--txt3); padding:4px 10px; border-radius:4px; font-size:12px; cursor:pointer; transition:all 0.2s; font-weight:600; }
 .cal-filter-btn.active { background:var(--txt); border-color:var(--txt); color:#fff; }
 
 .cal-nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
@@ -164,10 +164,37 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
 .wcard-half:first-child { border-right:1px solid var(--brd2); }
 .wcard-label-curr { font-size:10px; color:var(--red); font-weight:700; margin-bottom:6px; }
 .wcard-label-final { font-size:10px; color:var(--txt2); font-weight:600; margin-bottom:6px; }
+.wcard-sub { font-size:10px; color:var(--txt4); margin-top:6px; transform:scale(0.85); transform-origin:center; white-space:nowrap; }
 .wcard-val { font-size:22px; font-weight:700; font-family:'IBM Plex Sans KR'; color:var(--txt); }
 
 .collapsible-content { display:none; margin-top:12px; border-top:1px dashed var(--brd2); padding-top:12px; }
 .collapsible-content.open { display:block; }
+
+/* PHOTOBOOK ANIMATION & STYLE (라져 CD 대신) */
+.photobook-icon {
+  width: 50px; height: 65px; 
+  background: var(--bg4); 
+  border-radius: 4px 8px 8px 4px; 
+  position: relative; 
+  box-shadow: -2px 0 5px rgba(0,0,0,0.1), inset -5px 0 10px rgba(255,255,255,0.3);
+  border-left: 6px solid var(--red); 
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--txt);
+  font-family: 'IBM Plex Sans KR', sans-serif;
+  transition: transform 0.3s ease;
+}
+.photobook-icon::after {
+  content: 'BOOK';
+  font-size: 10px;
+  opacity: 0.6;
+}
+.photobook-icon:hover {
+  transform: scale(1.05) rotate(3deg);
+}
 
 /* HEATMAP & MINIMAP */
 .heatmap-wrap { display:flex; flex-direction:column; gap:30px; align-items:center; overflow-x:auto; padding-bottom:15px; }
@@ -246,7 +273,8 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
     <div class="card" style="padding:16px;">
       <div style="font-weight:700; color:var(--red); margin-bottom:8px; font-size:13px;">🎁 재관람 혜택</div>
       <div style="font-size:12px; color:var(--txt); line-height:1.6;">
-        • 5회 관람 시 : 40% 할인권 2매, 현장예매 50% 할인권 1매 (임시)
+        • 4회 관람 시 : 40% 할인권 2매<br>
+        • 7회 관람 시 : 미니 포토북
       </div>
     </div>
 
@@ -263,7 +291,7 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
       <div id="wallet-history" class="collapsible-content">
         <div class="twrap" style="margin:0; padding:0;">
           <table class="record-tb" style="width:100%; font-size:11px;">
-            <thead><tr><th>날짜</th><th style="min-width:30px;">유형</th><th>재관</th><th>40%</th><th>현장50%</th><th style="min-width:100px;">메모</th><th>순서 및 관리</th></tr></thead>
+            <thead><tr><th>날짜</th><th style="min-width:30px;">유형</th><th>재관</th><th>40%</th><th style="min-width:100px;">메모</th><th>순서 및 관리</th></tr></thead>
             <tbody id="wallet-history-body"></tbody>
           </table>
         </div>
@@ -276,6 +304,11 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
         <button class="btn sm" onclick="addBoard()">+ 도장판 추가</button>
       </div>
       <div id="board-status-container" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;"></div>
+    </div>
+    
+    <div class="card" style="background: var(--bg2); border-color: var(--brd2);">
+      <div class="card-title" style="margin:0; margin-bottom:16px;">📖 미니 포토북 획득 현황</div>
+      <div id="ost-container" style="margin-bottom:0;"></div>
     </div>
     
   </div>
@@ -389,7 +422,7 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
       <label class="flbl">좌석 정보 (층 / 열 / 번호)</label>
       <div style="display:flex; gap:10px;">
         <select id="rm-zone" class="fselect" style="flex:1;"><option value="">층 선택</option><option value="1층">1층</option><option value="2층">2층</option></select>
-        <input type="text" id="rm-row" class="finput" style="flex:1; text-transform:uppercase;" placeholder="열 (A~T, V, W)">
+        <input type="text" id="rm-row" class="finput" style="flex:1; text-transform:uppercase;" placeholder="열 (A~Q)">
         <input type="number" id="rm-num" class="finput" style="flex:1;" placeholder="번호" min="1">
       </div>
     </div>
@@ -490,7 +523,7 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
 
     <div class="fg">
       <label class="flbl">수량</label>
-      <div id="wm-coupon-inputs" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:12px;"></div>
+      <div id="wm-coupon-inputs" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;"></div>
     </div>
     
     <div class="fg"><label class="flbl">메모</label><input type="text" id="wm-memo" class="finput" style="text-transform:none;"></div>
@@ -535,11 +568,10 @@ const CONFIG = {
   
   WALLET_FIELDS: [
     { id: "re", label: "재관람 할인표" },
-    { id: "d40", label: "40% 할인권" },
-    { id: "d50_onsite", label: "현장 50% 할인권" }
+    { id: "d40", label: "40% 할인권" }
   ],
 
-  STAMP_MILESTONES: [5]
+  STAMP_MILESTONES: [4, 7]
 };
 
 // ============================================================
@@ -1171,11 +1203,10 @@ function renderCalendar() {
   const monthStart = `${monthStr}-01`;
   const monthEnd = `${monthStr}-${String(daysInMonth).padStart(2,'0')}`;
 
-  // 불러온 외부 이벤트가 있으면 그것을 쓰고, 없으면 기본 기본값을 쓰도록 변경
   const evts = state.events && state.events.length ? state.events : CONFIG.EVENTS;
   const segments = [];
   
-  evts.forEach(ev => { // 💡 CONFIG.EVENTS 대신 evts로 변경하여 연동 완료
+  evts.forEach(ev => {
     if (ev.endDate < monthStart || ev.startDate > monthEnd) return;
     const clampedStart = ev.startDate < monthStart ? monthStart : ev.startDate;
     const clampedEnd   = ev.endDate   > monthEnd   ? monthEnd   : ev.endDate;
@@ -1359,12 +1390,10 @@ function calculateWalletBalances() {
       Object.keys(r.boards).forEach(bid => {
         let before = boardCum[bid] || 0;
         boardCum[bid] = before + r.boards[bid];
-        if (before < 5 && boardCum[bid] >= 5) {
+        if (before < 4 && boardCum[bid] >= 4) {
           final['d40'] += 2;
-          final['d50_onsite'] += 1;
           if (r.date <= today) {
             current['d40'] += 2;
-            current['d50_onsite'] += 1;
           }
         }
       });
@@ -1415,12 +1444,12 @@ function getCombinedWallet() {
       Object.keys(r.boards).forEach(bid => {
         let before = boardCum[bid] || 0;
         boardCum[bid] = before + r.boards[bid];
-        if (before < 5 && boardCum[bid] >= 5) {
+        if (before < 4 && boardCum[bid] >= 4) {
           combined.push({
             id: 'auto_ms_' + r.id + '_' + bid,
             date: r.date, time: r.time, type: 'add',
-            items: { d40: 2, d50_onsite: 1 },
-            memo: "5🎁 40% 2매, 현장50% 1매 획득", 
+            items: { d40: 2 },
+            memo: "4🎁 40% 2매 획득", 
             isAuto: true, defaultOrder: 3
           });
         }
@@ -1487,12 +1516,12 @@ function renderCoupons() {
     const cVal = bals.current[f.id];
     const fVal = bals.final[f.id];
     return `
-      <div class="wcard" style="width:calc(33.33% - 6px);">
+      <div class="wcard" style="width:calc(50% - 4px);">
         <div class="wcard-header">${f.label}</div>
         <div class="wcard-body" style="flex-direction:column;">
           <div class="wcard-half" style="border-right:none; border-bottom:1px solid var(--brd2); padding:8px 0;">
             <div class="wcard-label-curr" style="color:var(--txt2);">현재</div>
-            <div class="wcard-val" style="color:${getColor(cVal)};">${cVal}</div>
+            <div class="wcard-val" style="color:${getColor(cVal)}; text-shadow:0 0 5px rgba(255,255,255,0.3);">${cVal}</div>
           </div>
           <div class="wcard-half" style="padding:8px 0;">
             <div class="wcard-label-final">최종</div>
@@ -1515,7 +1544,7 @@ function renderCoupons() {
 
   const histTbody = document.getElementById('wallet-history-body');
   if(combinedWallet.length === 0) {
-    histTbody.innerHTML = `<tr><td colspan="7" style="padding:20px; color:var(--txt4); font-weight:600;">기록이 없습니다</td></tr>`;
+    histTbody.innerHTML = `<tr><td colspan="6" style="padding:20px; color:var(--txt4); font-weight:600;">기록이 없습니다</td></tr>`;
   } else {
     const getDow = (dStr) => { const d = new Date(dStr + 'T00:00:00'); return ['일','월','화','수','목','금','토'][d.getDay()]; };
     histTbody.innerHTML = combinedWallet.map(w => {
@@ -1666,10 +1695,15 @@ function renderBoardStatus() {
   });
 
   const maxMilestone = Math.max(...CONFIG.STAMP_MILESTONES);
+  let currPhotobook = 0;
+  let finalPhotobook = 0;
 
   document.getElementById('board-status-container').innerHTML = state.boards.map(b => {
     const cCnt = currBoardCounts[b.id];
     const fCnt = finalBoardCounts[b.id];
+    
+    if (cCnt >= 7) currPhotobook++;
+    if (fCnt >= 7) finalPhotobook++;
 
     const nxt = CONFIG.STAMP_MILESTONES.find(m => m > cCnt); 
     const pct = Math.min(100, (cCnt / maxMilestone) * 100); 
@@ -1693,8 +1727,8 @@ function renderBoardStatus() {
     };
 
     let statusMsg = '';
-    if (cCnt >= 5) {
-       statusMsg = `<span style="color:var(--txt); font-weight:700;">✓ 도장판 완료 (최종 혜택 획득)</span>`;
+    if (cCnt >= 7) {
+       statusMsg = `<span style="color:var(--txt); font-weight:700;">✓ 도장판 완료 (미니 포토북 획득)</span>`;
     } else if (nxt) {
        statusMsg = `다음(${nxt}개)까지 <span style="color:var(--txt); font-weight:700;">${nxt - cCnt}</span>개 남음`;
     } else {
@@ -1732,6 +1766,25 @@ function renderBoardStatus() {
       </div>
     </div>`;
   }).join('');
+  
+  document.getElementById('ost-container').innerHTML = `
+    <div style="width:100%; display:flex; align-items:center; background:var(--bg3); border:1px solid var(--brd2); border-radius:8px; padding:16px; gap:20px; overflow:hidden;">
+      
+      <div class="photobook-icon"></div>
+      
+      <div style="flex:1; display:flex; justify-content:space-around; align-items:center;">
+        <div style="text-align:center;">
+          <div style="font-size:11px; color:var(--txt); font-weight:700; margin-bottom:4px;">현재 획득</div>
+          <div style="font-size:24px; font-weight:700; font-family:'IBM Plex Sans KR'; color:${currPhotobook > 0 ? 'var(--txt)' : 'var(--txt4)'};">${currPhotobook}</div>
+        </div>
+        <div style="width:1px; height:30px; background:var(--brd2);"></div>
+        <div style="text-align:center;">
+          <div style="font-size:11px; color:var(--txt3); font-weight:600; margin-bottom:4px;">최종 예정</div>
+          <div style="font-size:24px; font-weight:700; font-family:'IBM Plex Sans KR'; color:var(--txt2);">${finalPhotobook}</div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function addBoard() {
@@ -1815,7 +1868,7 @@ function renderStats() {
   let hmHtml = '';
   THEATER_ZONES.forEach(z => { 
     hmHtml += `<div style="display:flex; flex-direction:column; align-items:center; margin-bottom:10px; width:100%;">`;
-    hmHtml += `<div style="font-size:11px; font-weight:700; color:var(--txt); margin-bottom:12px;">${z.name}</div>`;
+    hmHtml += `<div style="font-size:11px; font-weight:700; color:var(--txt); margin-bottom:12px; text-shadow:0 0 3px rgba(255,255,255,0.3);">${z.name}</div>`;
     
     hmHtml += `<div style="display:flex; gap:16px; align-items:flex-start;">`;
     
