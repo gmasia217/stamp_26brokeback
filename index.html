@@ -21,7 +21,7 @@
   --bg: #eee8dc;      
   --bg2: #f8f5f0;     
   --bg3: #e2d8c9;     
-  --bg4: #d5c8b5;     
+  --bg4: #d5c8b5;     /* 빈 좌석 색상 (연한 모래색) */
   --brd: #d2c5b3;     
   --brd2: #bfb09c;    
 
@@ -41,12 +41,12 @@
   --blu: #4a748f;
   --blu2: #d2e0eb;
 
-  /* 좌석 히트맵 컬러 (포스터의 우드/어스 톤) */
-  --seat1: #d2c5b3;
-  --seat2: #b5a48e;
-  --seat3: #b07d58;
-  --seat4: #965d38;
-  --seat5: #733c19;
+  /* 🎨 좌석 히트맵 컬러 (모래색 배경 위에서 확실히 눈에 띄는 러스트 그라데이션) */
+  --seat1: #d9a796;   /* 1회: 화사한 파스텔 러스트 */
+  --seat2: #c3836d;   /* 2회: 중간 톤 러스트 */
+  --seat3: #ac5f46;   /* 3회: 짙은 러스트 오렌지 */
+  --seat4: #8e472d;   /* 4회: 메인 포인트 타이틀 벽돌색 */
+  --seat5: #5e2916;   /* 5회+: 아주 깊고 진한 초콜릿 브라운 */
   
   --tab-h: 60px;
 }
@@ -170,7 +170,7 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
 .collapsible-content { display:none; margin-top:12px; border-top:1px dashed var(--brd2); padding-top:12px; }
 .collapsible-content.open { display:block; }
 
-/* PHOTOBOOK ANIMATION & STYLE (라져 CD 대신) */
+/* PHOTOBOOK ANIMATION & STYLE */
 .photobook-icon {
   width: 50px; height: 65px; 
   background: var(--bg4); 
@@ -915,7 +915,7 @@ function addBoardFromModal() {
   const nameInput = document.getElementById('rm-new-board-name').value;
   const newName = nameInput.trim() || `${state.boards.length + 1}`; 
   const newId = "b" + Date.now();
-  state.boards.push({ id: newId, name: newName, initial: 0, active: true });
+  state.boards.push({ id: "b" + Date.now(), name: newName, initial: 0, active: true });
   saveState();
   document.getElementById('rm-new-board-name').value = '';
   
@@ -1521,7 +1521,7 @@ function renderCoupons() {
         <div class="wcard-body" style="flex-direction:column;">
           <div class="wcard-half" style="border-right:none; border-bottom:1px solid var(--brd2); padding:8px 0;">
             <div class="wcard-label-curr" style="color:var(--txt2);">현재</div>
-            <div class="wcard-val" style="color:${getColor(cVal)}; text-shadow:0 0 5px rgba(255,255,255,0.3);">${cVal}</div>
+            <div class="wcard-val" style="color:${getColor(cVal)};">${cVal}</div>
           </div>
           <div class="wcard-half" style="padding:8px 0;">
             <div class="wcard-label-final">최종</div>
@@ -1868,7 +1868,7 @@ function renderStats() {
   let hmHtml = '';
   THEATER_ZONES.forEach(z => { 
     hmHtml += `<div style="display:flex; flex-direction:column; align-items:center; margin-bottom:10px; width:100%;">`;
-    hmHtml += `<div style="font-size:11px; font-weight:700; color:var(--txt); margin-bottom:12px; text-shadow:0 0 3px rgba(255,255,255,0.3);">${z.name}</div>`;
+    hmHtml += `<div style="font-size:11px; font-weight:700; color:var(--txt); margin-bottom:12px;">${z.name}</div>`;
     
     hmHtml += `<div style="display:flex; gap:16px; align-items:flex-start;">`;
     
@@ -2000,6 +2000,47 @@ async function fetchEvents(manual = false) {
     if (statusEl) statusEl.textContent = '캐시/내장 데이터 사용 중';
     if (manual) alert('오프라인 상태이거나 events.json 파일이 없습니다. 내장된 이벤트를 사용합니다.');
   }
+}
+
+// ============================================================
+// CALENDAR & EVENTS 
+// ============================================================
+function changeMonth(diff) {
+  curMonth += diff;
+  if(curMonth > 11) { curMonth = 0; curYear++; }
+  if(curMonth < 0) { curMonth = 11; curYear--; }
+  renderCalendar();
+}
+
+function renderCalFilters() {
+  let html = '';
+  CONFIG.ROLES.forEach((role, idx) => {
+    const roleKey = `cast${idx+1}`;
+    html += `<div class="cal-filter-group">
+      <div class="cal-filter-label">${role.label}</div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">`;
+    role.actors.forEach(actor => {
+      const isActive = calFilters[roleKey] && calFilters[roleKey].includes(actor);
+      html += `<button class="cal-filter-btn ${isActive ? 'active' : ''}" onclick="toggleCalFilter('${roleKey}', '${actor}')">${actor}</button>`;
+    });
+    html += `</div></div>`;
+  });
+  document.getElementById('cal-filter-wrap').innerHTML = html;
+}
+
+function toggleCalFilter(roleKey, actor) {
+  if (!calFilters[roleKey]) calFilters[roleKey] = [];
+  const idx = calFilters[roleKey].indexOf(actor);
+  if (idx > -1) calFilters[roleKey].splice(idx, 1);
+  else calFilters[roleKey].push(actor);
+  renderCalFilters(); 
+}
+
+function applyCalFilter() { renderCalendar(); }
+function resetCalFilter() { 
+  calFilters = {};
+  CONFIG.ROLES.forEach((r, idx) => { calFilters[`cast${idx+1}`] = []; });
+  renderCalFilters(); renderCalendar(); 
 }
 
 function exportData() {
