@@ -1528,11 +1528,15 @@ function renderCoupons() {
     return 'var(--txt4)'; 
   };
 
-  document.getElementById('wallet-cards').innerHTML = CONFIG.WALLET_FIELDS.map(f => {
+  document.getElementById('wallet-cards').innerHTML = CONFIG.WALLET_FIELDS.map((f, index) => {
     const cVal = bals.current[f.id];
     const fVal = bals.final[f.id];
+    
+    // 순서가 0, 1번(재관람, 40%)이면 50% 너비, 나머지는 33.33% 너비 적용
+    const cardWidth = index < 2 ? 'calc(50% - 4px)' : 'calc(33.33% - 6px)';
+    
     return `
-      <div class="wcard" style="width:calc(33.33% - 6px);">
+      <div class="wcard" style="width:${cardWidth};">
         <div class="wcard-header">${f.label}</div>
         <div class="wcard-body" style="flex-direction:column;">
           <div class="wcard-half" style="border-right:none; border-bottom:1px solid var(--brd2); padding:8px 0;">
