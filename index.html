@@ -157,7 +157,7 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
 
 /* WALLET & STAMPS */
 .wallet-grid { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
-.wcard { width:calc(50% - 4px); flex-grow:1; background:var(--bg3); border:1px solid var(--brd2); border-radius:6px; text-align:center; display:flex; flex-direction:column; overflow:hidden; }
+.wcard { width:calc(33.33% - 6px); flex-grow:1; background:var(--bg3); border:1px solid var(--brd2); border-radius:6px; text-align:center; display:flex; flex-direction:column; overflow:hidden; }
 .wcard-header { background:var(--bg4); padding:8px 4px; font-size:11px; color:var(--txt); font-weight:700; border-bottom:1px solid var(--brd2); }
 .wcard-body { display:flex; background:var(--bg2); }
 .wcard-half { flex:1; padding:12px 0; }
@@ -291,7 +291,7 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
       <div id="wallet-history" class="collapsible-content">
         <div class="twrap" style="margin:0; padding:0;">
           <table class="record-tb" style="width:100%; font-size:11px;">
-            <thead><tr><th>날짜</th><th style="min-width:30px;">유형</th><th>재관</th><th>40%</th><th style="min-width:100px;">메모</th><th>순서 및 관리</th></tr></thead>
+            <thead><tr><th>날짜</th><th style="min-width:30px;">유형</th><th>재관</th><th>40%</th><th>온35%</th><th>현40%</th><th>증빙</th><th style="min-width:100px;">메모</th><th>순서 및 관리</th></tr></thead>
             <tbody id="wallet-history-body"></tbody>
           </table>
         </div>
@@ -480,9 +480,13 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
       <span class="dt-label">SEAT</span>
       <span id="dt-seat" class="dt-value"></span>
     </div>
+    <div class="detail-info-row">
+      <span class="dt-label">EVENT</span>
+      <span id="dt-event" class="dt-value"></span>
+    </div>
     
     <div class="detail-info-row" id="dt-details-row" style="display:none; margin-bottom:16px;">
-      <span class="dt-label">DETAILS</span>
+      <span class="dt-label">DETAIL</span>
       <div class="dt-value">
         <button type="button" class="btn-ticket" onclick="openReceiptViewer()" title="티켓/내역서 보기">
            <span style="font-size:16px; margin-top:-1px;">🎫</span>
@@ -523,7 +527,7 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
 
     <div class="fg">
       <label class="flbl">수량</label>
-      <div id="wm-coupon-inputs" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;"></div>
+      <div id="wm-coupon-inputs" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:12px;"></div>
     </div>
     
     <div class="fg"><label class="flbl">메모</label><input type="text" id="wm-memo" class="finput" style="text-transform:none;"></div>
@@ -561,6 +565,9 @@ const CONFIG = {
     { label: "뉴프로할", value: "뉴프로할" },
     { label: "마티네할", value: "마티네할" },
     { label: "40% 할인권", value: "40%", useWallet: "d40" },
+    { label: "온라인 35% 할인권", value: "35%_online", useWallet: "d35_online" },
+    { label: "현장구매 40% 할인권", value: "40%_onsite", useWallet: "d40_onsite" },
+    { label: "할인증빙패스", value: "증빙패스", useWallet: "pass" },
     { label: "타임세일", value: "타임세일" },
     { label: "교환", value: "교환" },
     { label: "나눔", value: "나눔" }
@@ -568,7 +575,10 @@ const CONFIG = {
   
   WALLET_FIELDS: [
     { id: "re", label: "재관람 할인표" },
-    { id: "d40", label: "40% 할인권" }
+    { id: "d40", label: "40% 할인권" },
+    { id: "d35_online", label: "온라인 35% 할인권" },
+    { id: "d40_onsite", label: "현장구매 40% 할인권" },
+    { id: "pass", label: "할인증빙패스" }
   ],
 
   STAMP_MILESTONES: [4, 7]
@@ -915,7 +925,7 @@ function addBoardFromModal() {
   const nameInput = document.getElementById('rm-new-board-name').value;
   const newName = nameInput.trim() || `${state.boards.length + 1}`; 
   const newId = "b" + Date.now();
-  state.boards.push({ id: "b" + Date.now(), name: newName, initial: 0, active: true });
+  state.boards.push({ id: newId, name: newName, initial: 0, active: true });
   saveState();
   document.getElementById('rm-new-board-name').value = '';
   
@@ -1071,6 +1081,12 @@ function openDetailModal(id) {
   }
   
   document.getElementById('dt-seat').textContent = seatStr;
+  
+  const getEventName = (dateStr) => {
+    const evs = state.events.filter(e => dateStr >= e.startDate && dateStr <= e.endDate);
+    return evs.map(e => e.name).join(', ') || '-';
+  };
+  document.getElementById('dt-event').textContent = getEventName(r.date);
   
   const detailsRow = document.getElementById('dt-details-row');
   if (r.receipt) {
@@ -1516,12 +1532,12 @@ function renderCoupons() {
     const cVal = bals.current[f.id];
     const fVal = bals.final[f.id];
     return `
-      <div class="wcard" style="width:calc(50% - 4px);">
+      <div class="wcard" style="width:calc(33.33% - 6px);">
         <div class="wcard-header">${f.label}</div>
         <div class="wcard-body" style="flex-direction:column;">
           <div class="wcard-half" style="border-right:none; border-bottom:1px solid var(--brd2); padding:8px 0;">
             <div class="wcard-label-curr" style="color:var(--txt2);">현재</div>
-            <div class="wcard-val" style="color:${getColor(cVal)};">${cVal}</div>
+            <div class="wcard-val" style="color:${getColor(cVal)}; text-shadow:0 0 5px rgba(255,255,255,0.3);">${cVal}</div>
           </div>
           <div class="wcard-half" style="padding:8px 0;">
             <div class="wcard-label-final">최종</div>
@@ -1544,7 +1560,7 @@ function renderCoupons() {
 
   const histTbody = document.getElementById('wallet-history-body');
   if(combinedWallet.length === 0) {
-    histTbody.innerHTML = `<tr><td colspan="6" style="padding:20px; color:var(--txt4); font-weight:600;">기록이 없습니다</td></tr>`;
+    histTbody.innerHTML = `<tr><td colspan="${CONFIG.WALLET_FIELDS.length + 4}" style="padding:20px; color:var(--txt4); font-weight:600;">기록이 없습니다</td></tr>`;
   } else {
     const getDow = (dStr) => { const d = new Date(dStr + 'T00:00:00'); return ['일','월','화','수','목','금','토'][d.getDay()]; };
     histTbody.innerHTML = combinedWallet.map(w => {
@@ -1868,7 +1884,7 @@ function renderStats() {
   let hmHtml = '';
   THEATER_ZONES.forEach(z => { 
     hmHtml += `<div style="display:flex; flex-direction:column; align-items:center; margin-bottom:10px; width:100%;">`;
-    hmHtml += `<div style="font-size:11px; font-weight:700; color:var(--txt); margin-bottom:12px;">${z.name}</div>`;
+    hmHtml += `<div style="font-size:11px; font-weight:700; color:var(--txt); margin-bottom:12px; text-shadow:0 0 3px rgba(255,255,255,0.3);">${z.name}</div>`;
     
     hmHtml += `<div style="display:flex; gap:16px; align-items:flex-start;">`;
     
@@ -1955,7 +1971,7 @@ function renderStats() {
       <td style="color:var(--txt2); font-weight:600;">${r.time}</td>
       <td style="color:var(--red); font-weight:700;">${castStr}</td>
       <td style="font-size:11px; color:var(--txt2);">${longSeatStr}</td>
-      <td style="font-size:11px; color:var(--txt); font-weight:600; white-space:normal; line-height:1.2;">${evName}</td>
+      <td style="font-size:11px; color:var(--txt); font-weight:600; white-space:nowrap; line-height:1.2;">${evName}</td>
     </tr>`;
   }).join('');
   
@@ -2000,47 +2016,6 @@ async function fetchEvents(manual = false) {
     if (statusEl) statusEl.textContent = '캐시/내장 데이터 사용 중';
     if (manual) alert('오프라인 상태이거나 events.json 파일이 없습니다. 내장된 이벤트를 사용합니다.');
   }
-}
-
-// ============================================================
-// CALENDAR & EVENTS 
-// ============================================================
-function changeMonth(diff) {
-  curMonth += diff;
-  if(curMonth > 11) { curMonth = 0; curYear++; }
-  if(curMonth < 0) { curMonth = 11; curYear--; }
-  renderCalendar();
-}
-
-function renderCalFilters() {
-  let html = '';
-  CONFIG.ROLES.forEach((role, idx) => {
-    const roleKey = `cast${idx+1}`;
-    html += `<div class="cal-filter-group">
-      <div class="cal-filter-label">${role.label}</div>
-      <div style="display:flex; gap:6px; flex-wrap:wrap;">`;
-    role.actors.forEach(actor => {
-      const isActive = calFilters[roleKey] && calFilters[roleKey].includes(actor);
-      html += `<button class="cal-filter-btn ${isActive ? 'active' : ''}" onclick="toggleCalFilter('${roleKey}', '${actor}')">${actor}</button>`;
-    });
-    html += `</div></div>`;
-  });
-  document.getElementById('cal-filter-wrap').innerHTML = html;
-}
-
-function toggleCalFilter(roleKey, actor) {
-  if (!calFilters[roleKey]) calFilters[roleKey] = [];
-  const idx = calFilters[roleKey].indexOf(actor);
-  if (idx > -1) calFilters[roleKey].splice(idx, 1);
-  else calFilters[roleKey].push(actor);
-  renderCalFilters(); 
-}
-
-function applyCalFilter() { renderCalendar(); }
-function resetCalFilter() { 
-  calFilters = {};
-  CONFIG.ROLES.forEach((r, idx) => { calFilters[`cast${idx+1}`] = []; });
-  renderCalFilters(); renderCalendar(); 
 }
 
 function exportData() {
