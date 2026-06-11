@@ -291,7 +291,7 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
       <div id="wallet-history" class="collapsible-content">
         <div class="twrap" style="margin:0; padding:0;">
           <table class="record-tb" style="width:100%; font-size:11px;">
-            <thead><tr><th>날짜</th><th style="min-width:30px;">유형</th><th>재관</th><th>40%</th><th>온35%</th><th>현40%</th><th>증빙</th><th style="min-width:100px;">메모</th><th>순서 및 관리</th></tr></thead>
+            <thead><tr><th>날짜</th><th style="min-width:30px;">유형</th><th>재관</th><th>40%</th><th>온35%</th><th>현40%</th><th>증빙패스</th><th style="min-width:100px;">메모</th><th>순서 및 관리</th></tr></thead>
             <tbody id="wallet-history-body"></tbody>
           </table>
         </div>
@@ -565,8 +565,8 @@ const CONFIG = {
     { label: "뉴프로할", value: "뉴프로할" },
     { label: "마티네할", value: "마티네할" },
     { label: "40% 할인권", value: "40%", useWallet: "d40" },
-    { label: "온라인 35% 할인권", value: "35%_online", useWallet: "d35_online" },
-    { label: "현장구매 40% 할인권", value: "40%_onsite", useWallet: "d40_onsite" },
+    { label: "온라인 35% 할인권", value: "온35%", useWallet: "d35_online" },
+    { label: "현장구매 40% 할인권", value: "현40%", useWallet: "d40_onsite" },
     { label: "할인증빙패스", value: "증빙패스", useWallet: "pass" },
     { label: "타임세일", value: "타임세일" },
     { label: "교환", value: "교환" },
