@@ -1,3 +1,38 @@
 [
-  { "name": "프리뷰", "startDate": "2026-06-23", "endDate": "2026-06-26", "color": "#ccd9ce" }
+  { 
+    "name": "프리뷰", 
+    "startDate": "2026-06-23", 
+    "endDate": "2026-06-26", 
+    "color": "#7f8f79" 
+  },
+  { 
+    "name": "페어 프로필 엽서", 
+    "startDate": "2026-06-27", 
+    "endDate": "2026-06-28", 
+    "color": "#a8896c" 
+  },
+  { 
+    "name": "쿠폰팩", 
+    "startDate": "2026-06-30", 
+    "endDate": "2026-07-05", 
+    "color": "#8c7765" 
+  },
+  { 
+    "name": "커튼콜 데이", 
+    "startDate": "2026-06-30", 
+    "endDate": "2026-07-03", 
+    "color": "#687c8a" 
+  },
+  { 
+    "name": "Special Song Day", 
+    "startDate": "2026-07-04", 
+    "endDate": "2026-07-05", 
+    "color": "#b56a4e" 
+  },
+  { 
+    "name": "트리플 적립", 
+    "startDate": "2026-07-07", 
+    "endDate": "2026-07-12", 
+    "color": "#8e472d" 
+  }
 ]
