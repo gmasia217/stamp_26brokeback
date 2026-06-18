@@ -1351,12 +1351,13 @@ function renderCalendar() {
           const leftPct  = (s.startCol / 7 * 100).toFixed(2);
           const widthPct = ((s.endCol - s.startCol + 1) / 7 * 100).toFixed(2);
           
-          // 링크가 있으면 클릭 이벤트와 포인터 커서 추가
+          // 링크가 있을 때만 클릭 이벤트와 포인터(클릭 가능) 속성을 부여
           const clickAction = s.url ? `onclick="window.open('${s.url}', '_blank'); event.stopPropagation();"` : '';
-          const pointerStyle = s.url ? 'pointer-events:auto; cursor:pointer;' : 'pointer-events:auto;';
+          const pointerStyle = s.url ? 'pointer-events:auto; cursor:pointer;' : '';
 
-          html += `<div ${clickAction} style="position:absolute; left:${leftPct}%; width:calc(${widthPct}% - 2px); height:14px; background:${s.color}; border-radius:2px; display:flex; align-items:center; padding:0 4px; overflow:hidden; box-shadow: 0 0 5px rgba(255,255,255,0.2); ${pointerStyle}">
-            <span style="font-size:9px; font-weight:700; color:#111; white-space:nowrap;">${s.name}</span>
+          // 브로크백 마운틴의 테마 그림자(0 1px 3px rgba(0,0,0,0.1)) 적용
+          html += `<div ${clickAction} style="position:absolute; left:${leftPct}%; width:calc(${widthPct}% - 2px); height:14px; background:${s.color}; border-radius:2px; display:flex; align-items:center; padding:0 4px; overflow:hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); ${pointerStyle}">
+            <span style="font-size:9px; font-weight:700; color:#fff; white-space:nowrap;">${s.name}</span>
           </div>`;
         });
         html += `</div>`;
