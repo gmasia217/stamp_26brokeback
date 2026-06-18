@@ -9,30 +9,35 @@
     "name": "페어 프로필 엽서", 
     "startDate": "2026-06-27", 
     "endDate": "2026-06-28", 
-    "color": "#a8896c" 
+    "color": "#a8896c",
+    "url": "https://x.com/newpro_BM/status/2064950858971066533?s=20" 
   },
   { 
     "name": "쿠폰팩", 
     "startDate": "2026-06-30", 
     "endDate": "2026-07-05", 
-    "color": "#8c7765" 
+    "color": "#8c7765",
+    "url": "https://x.com/newpro_BM/status/2064950920136544766?s=20"
   },
   { 
     "name": "커튼콜 데이", 
     "startDate": "2026-06-30", 
     "endDate": "2026-07-03", 
-    "color": "#687c8a" 
+    "color": "#687c8a" ,
+    "url": "https://x.com/newpro_BM/status/2064950979611799643?s=20"
   },
   { 
     "name": "Special Song Day", 
     "startDate": "2026-07-04", 
     "endDate": "2026-07-05", 
-    "color": "#b56a4e" 
+    "color": "#b56a4e" ,
+    "url": "https://x.com/newpro_BM/status/2064951051095302365?s=20"
   },
   { 
     "name": "트리플 적립", 
     "startDate": "2026-07-07", 
     "endDate": "2026-07-12", 
-    "color": "#8e472d" 
+    "color": "#8e472d",
+    "url": "https://x.com/newpro_BM/status/2064951097396240471?s=20" 
   }
 ]
