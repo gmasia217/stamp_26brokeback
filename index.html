@@ -1351,17 +1351,12 @@ function renderCalendar() {
           const leftPct  = (s.startCol / 7 * 100).toFixed(2);
           const widthPct = ((s.endCol - s.startCol + 1) / 7 * 100).toFixed(2);
           
-          // url 유무에 따라 클릭 이벤트와 마우스 포인터 스타일 생성
-          let clickAttr = '';
-          let cursorStyle = '';
-          if (s.url) {
-            // event.stopPropagation()을 넣어야 달력 날짜 클릭(기록 추가) 창이 같이 뜨는 것을 막아줌
-            clickAttr = ` onclick="window.open('${s.url}', '_blank'); event.stopPropagation();"`;
-            cursorStyle = ' cursor:pointer;';
-          }
+          // 링크가 있으면 클릭 이벤트와 포인터 커서 추가
+          const clickAction = s.url ? `onclick="window.open('${s.url}', '_blank'); event.stopPropagation();"` : '';
+          const pointerStyle = s.url ? 'pointer-events:auto; cursor:pointer;' : 'pointer-events:auto;';
 
-          html += `<div style="position:absolute; left:${leftPct}%; width:calc(${widthPct}% - 2px); height:14px; background:${s.color}; border-radius:2px; display:flex; align-items:center; padding:0 4px; overflow:hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);${cursorStyle}"${clickAttr}>
-            <span style="font-size:9px; font-weight:700; color:#fff; white-space:nowrap;">${s.name}</span>
+          html += `<div ${clickAction} style="position:absolute; left:${leftPct}%; width:calc(${widthPct}% - 2px); height:14px; background:${s.color}; border-radius:2px; display:flex; align-items:center; padding:0 4px; overflow:hidden; box-shadow: 0 0 5px rgba(255,255,255,0.2); ${pointerStyle}">
+            <span style="font-size:9px; font-weight:700; color:#111; white-space:nowrap;">${s.name}</span>
           </div>`;
         });
         html += `</div>`;
