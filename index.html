@@ -569,8 +569,9 @@ const CONFIG = {
     { label: "현장구매 40% 할인권", value: "현40%", useWallet: "d40_onsite" },
     { label: "할인증빙패스", value: "증빙패스", useWallet: "pass" },
     { label: "타임세일", value: "타임세일" },
-    { label: "교환", value: "교환" },
-    { label: "나눔", value: "나눔" }
+    { label: "자리 나눔", value: "자리 나눔" },
+    { label: "도장 나눔", value: "도장 나눔" },
+    { label: "교환", value: "교환" }
   ],
   
   WALLET_FIELDS: [
@@ -753,14 +754,14 @@ function renderRecords() {
   });
   
   if (hideExchange) {
-    sorted = sorted.filter(r => r.discount !== '교환' && r.discount !== '교환/나눔');
+    sorted = sorted.filter(r => r.discount !== '교환' && r.discount !== '교환/나눔' && r.discount !== '나눔' && r.discount !== '도장 나눔');
   }
 
   let boardCum = {};
   state.boards.forEach(b => boardCum[b.id] = b.initial || 0);
 
   const todayD = todayStr();
-  const closestRecord = sorted.find(r => r.date >= todayD && !['교환', '교환/나눔', '나눔'].includes(r.discount));
+  const closestRecord = sorted.find(r => r.date >= todayD && !['교환', '교환/나눔', '나눔', '도장 나눔'].includes(r.discount));
   const closestId = closestRecord ? closestRecord.id : null;
 
   sorted.forEach(r => {
@@ -798,7 +799,8 @@ function renderRecords() {
     }
 
     const dispDisc = formatDiscount(r.discount);
-    const isExchange = (r.discount === '교환' || r.discount === '교환/나눔');
+    // '교환'뿐만 아니라 '도장 나눔'도 흐릿하게 표시되도록 조건 추가
+    const isExchange = (r.discount === '교환' || r.discount === '교환/나눔' || r.discount === '도장 나눔');
     const dimCls = isExchange ? 'opacity: 0.4;' : '';
     
     const isClosest = (r.id === closestId);
@@ -1288,7 +1290,7 @@ function renderCalendar() {
       dayItems = dayItems.filter(i => {
          let keepForRecord = true;
          if (i.records && i.records.length > 0) {
-           const nonExchangeRecords = i.records.filter(r => r.discount !== '교환' && r.discount !== '교환/나눔');
+           const nonExchangeRecords = i.records.filter(r => r.discount !== '교환' && r.discount !== '교환/나눔' && r.discount !== '나눔' && r.discount !== '도장 나눔');
            if (nonExchangeRecords.length > 0) {
              i.isBooked = true;
              const hasSeat = nonExchangeRecords.some(r => r.seatZone && r.seatZone.trim() !== "");
@@ -1395,7 +1397,7 @@ function calculateWalletBalances() {
   let sortedRecords = [...state.records].sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
 
   sortedRecords.forEach(r => {
-    const isNoReward = (r.discount === '교환' || r.discount === '교환/나눔' || r.discount === '나눔');
+    const isNoReward = (r.discount === '교환' || r.discount === '교환/나눔' || r.discount === '나눔' || r.discount === '도장 나눔');
 
     if (!isNoReward) {
       final['re'] += 1;
@@ -1441,7 +1443,7 @@ function getCombinedWallet() {
   let sortedRecords = [...state.records].sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
 
   sortedRecords.forEach(r => {
-    const isNoReward = (r.discount === '교환' || r.discount === '교환/나눔' || r.discount === '나눔');
+    const isNoReward = (r.discount === '교환' || r.discount === '교환/나눔' || r.discount === '나눔' || r.discount === '도장 나눔');
 
     if (!isNoReward) {
       const dateParts = r.date.split('-');
@@ -1829,7 +1831,7 @@ function renderStats() {
   let grouped = {};
 
   state.records.forEach(r => {
-    if (r.discount === '교환' || r.discount === '교환/나눔' || r.discount === '나눔') return;
+    if (r.discount === '교환' || r.discount === '교환/나눔' || r.discount === '나눔' || r.discount === '도장 나눔') return;
     if (!r.seatZone || r.seatZone.trim() === "") return;
     
     let k = r.date + '_' + r.time;
