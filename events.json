@@ -23,14 +23,14 @@
     "name": "커튼콜 데이", 
     "startDate": "2026-06-30", 
     "endDate": "2026-07-03", 
-    "color": "#687c8a" ,
+    "color": "#687c8a",
     "url": "https://x.com/newpro_BM/status/2064950979611799643?s=20"
   },
   { 
     "name": "Special Song Day", 
     "startDate": "2026-07-04", 
     "endDate": "2026-07-05", 
-    "color": "#b56a4e" ,
+    "color": "#b56a4e",
     "url": "https://x.com/newpro_BM/status/2064951051095302365?s=20"
   },
   { 
@@ -44,14 +44,21 @@
     "name": "스페셜 스탬프 위크", 
     "startDate": "2026-07-14", 
     "endDate": "2026-07-19", 
-    "color": "#5c705a" ,
+    "color": "#5c705a",
     "url": "https://x.com/newpro_BM/status/2074372869740712420?s=20" 
   },
   { 
     "name": "스크래치 복권 증정 위크", 
     "startDate": "2026-07-14", 
     "endDate": "2026-07-19", 
-    "color": "#c49b66" ,
+    "color": "#c49b66",
     "url": "https://x.com/newpro_BM/status/2074373004071768321?s=20" 
+  },
+  { 
+    "name": "폴라로이드 증정 위크", 
+    "startDate": "2026-07-21", 
+    "endDate": "2026-07-26", 
+    "color": "#94776e" ,
+    "url": "https://x.com/newpro_BM/status/2075082526641848343?s=20"
   }
 ]
