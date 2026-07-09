@@ -291,7 +291,7 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
       <div id="wallet-history" class="collapsible-content">
         <div class="twrap" style="margin:0; padding:0;">
           <table class="record-tb" style="width:100%; font-size:11px;">
-            <thead><tr><th>날짜</th><th style="min-width:30px;">유형</th><th>재관</th><th>40%</th><th>온35%</th><th>현40%</th><th>증빙패스</th><th style="min-width:100px;">메모</th><th>순서 및 관리</th></tr></thead>
+            <thead><tr><th>날짜</th><th style="min-width:30px;">유형</th><th>재관</th><th>40%</th><th>35%</th><th>50%</th><th>증빙</th><th>현40%</th><th style="min-width:100px;">메모</th><th>순서 및 관리</th></tr></thead>
             <tbody id="wallet-history-body"></tbody>
           </table>
         </div>
@@ -527,7 +527,7 @@ table.record-tb { width:max-content; min-width:100%; border-collapse:separate; b
 
     <div class="fg">
       <label class="flbl">수량</label>
-      <div id="wm-coupon-inputs" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:12px;"></div>
+      <div id="wm-coupon-inputs" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;"></div>
     </div>
     
     <div class="fg"><label class="flbl">메모</label><input type="text" id="wm-memo" class="finput" style="text-transform:none;"></div>
@@ -564,10 +564,11 @@ const CONFIG = {
     { label: "재관할", value: "재관할", useWallet: "re" },
     { label: "뉴프로할", value: "뉴프로할" },
     { label: "마티네할", value: "마티네할" },
+    { label: "35% 할인권", value: "35%", useWallet: "d35" },
     { label: "40% 할인권", value: "40%", useWallet: "d40" },
-    { label: "온라인 35% 할인권", value: "온35%", useWallet: "d35_online" },
-    { label: "현장구매 40% 할인권", value: "현40%", useWallet: "d40_onsite" },
+    { label: "50% 할인권", value: "50%", useWallet: "d50" },
     { label: "할인증빙패스", value: "증빙패스", useWallet: "pass" },
+    { label: "현장구매 40% 할인권", value: "현40%", useWallet: "d40_onsite" },
     { label: "타임세일", value: "타임세일" },
     { label: "자리 나눔", value: "자리 나눔" },
     { label: "도장 나눔", value: "도장 나눔" },
@@ -577,9 +578,10 @@ const CONFIG = {
   WALLET_FIELDS: [
     { id: "re", label: "재관람 할인표" },
     { id: "d40", label: "40% 할인권" },
-    { id: "d35_online", label: "온라인 35% 할인권" },
-    { id: "d40_onsite", label: "현장구매 40% 할인권" },
-    { id: "pass", label: "할인증빙패스" }
+    { id: "d35", label: "35% 할인권" },
+    { id: "d50", label: "50% 할인권" },
+    { id: "pass", label: "할인증빙패스" },
+    { id: "d40_onsite", label: "현장구매 40% 할인권" }
   ],
 
   STAMP_MILESTONES: [4, 7]
@@ -1536,15 +1538,12 @@ function renderCoupons() {
     return 'var(--txt4)'; 
   };
 
-  document.getElementById('wallet-cards').innerHTML = CONFIG.WALLET_FIELDS.map((f, index) => {
+  document.getElementById('wallet-cards').innerHTML = CONFIG.WALLET_FIELDS.map(f => {
     const cVal = bals.current[f.id];
     const fVal = bals.final[f.id];
     
-    // 순서가 0, 1번(재관람, 40%)이면 50% 너비, 나머지는 33.33% 너비 적용
-    const cardWidth = index < 2 ? 'calc(50% - 4px)' : 'calc(33.33% - 6px)';
-    
     return `
-      <div class="wcard" style="width:${cardWidth};">
+      <div class="wcard" style="width:calc(50% - 4px);">
         <div class="wcard-header">${f.label}</div>
         <div class="wcard-body" style="flex-direction:column;">
           <div class="wcard-half" style="border-right:none; border-bottom:1px solid var(--brd2); padding:8px 0;">
