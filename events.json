@@ -58,7 +58,28 @@
     "name": "폴라로이드 증정 위크", 
     "startDate": "2026-07-21", 
     "endDate": "2026-07-26", 
-    "color": "#94776e" ,
+    "color": "#94776e",
     "url": "https://x.com/newpro_BM/status/2075082526641848343?s=20"
+  },
+  { 
+    "name": "티켓 홀더 증정 데이", 
+    "startDate": "2026-07-22", 
+    "endDate": "2026-07-22", 
+    "color": "#51687d" ,
+    "url": "https://x.com/newpro_BM/status/2075761996612481164?s=20"
+  },
+  { 
+    "name": "티켓 홀더 증정 데이", 
+    "startDate": "2026-07-25", 
+    "endDate": "2026-07-26", 
+    "color": "#51687d" ,
+    "url": "https://x.com/newpro_BM/status/2075761996612481164?s=20"
+  },
+  { 
+    "name": "티켓 홀더 증정 데이", 
+    "startDate": "2026-08-01", 
+    "endDate": "2026-08-02", 
+    "color": "#51687d" ,
+    "url": "https://x.com/newpro_BM/status/2075761996612481164?s=20"
   }
 ]
