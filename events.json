@@ -65,21 +65,42 @@
     "name": "티켓 홀더 증정 데이", 
     "startDate": "2026-07-22", 
     "endDate": "2026-07-22", 
-    "color": "#51687d" ,
+    "color": "#51687d",
     "url": "https://x.com/newpro_BM/status/2075761996612481164?s=20"
   },
   { 
     "name": "티켓 홀더 증정 데이", 
     "startDate": "2026-07-25", 
     "endDate": "2026-07-26", 
-    "color": "#51687d" ,
+    "color": "#51687d",
     "url": "https://x.com/newpro_BM/status/2075761996612481164?s=20"
   },
   { 
     "name": "티켓 홀더 증정 데이", 
     "startDate": "2026-08-01", 
     "endDate": "2026-08-02", 
-    "color": "#51687d" ,
+    "color": "#51687d",
     "url": "https://x.com/newpro_BM/status/2075761996612481164?s=20"
+  },
+  {
+    "name": "오리지널 티켓 증정 데이",
+    "startDate": "2026-07-28",
+    "endDate": "2026-07-31",
+    "color": "#7a5c61",
+    "url": "https://x.com/newpro_BM/status/2079129421798314090?s=20"
+  },
+  {
+    "name": "프리쇼 촬영 위크",
+    "startDate": "2026-07-28",
+    "endDate": "2026-07-31",
+    "color": "#b38e5d",
+    "url": "https://x.com/newpro_BM/status/2079129541369610629?s=20"
+  },
+  {
+    "name": "프리쇼 촬영 위크",
+    "startDate": "2026-08-01",
+    "endDate": "2026-08-02",
+    "color": "#b38e5d",
+    "url": "https://x.com/newpro_BM/status/2079129541369610629?s=20"
   }
 ]
